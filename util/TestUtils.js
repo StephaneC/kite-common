@@ -71,6 +71,11 @@ const fixPath = function(pathOrUrl) {
 	return pathOrUrl;
 }
 
+const isDocumentReady = async function(driver) {
+	const s = await driver.executeScript("return document.readyState");
+	return s === "complete";
+}
+
 module.exports = {
 //	purgeCache: function (moduleName) {
 //    searchCache(moduleName, function (mod) {
@@ -83,6 +88,11 @@ module.exports = {
 //    });
 //	},
 	waitAround,
+
+	waitForPage: async function(driver, timeout) {
+		await driver.wait(isDocumentReady(driver), timeout);
+	},
+
   waitForElement: async function(driver, type, value, timeout) {
     switch(type) {
       case 'id': {
@@ -151,7 +161,11 @@ module.exports = {
   },
   takeScreenshot: async function(driver, filePath, fileName) {
     const image = await driver.takeScreenshot();
-    fs.writeFile(fixPath(filePath) + fileName, image, 'base64');
+    fs.writeFile(fixPath(filePath) + fileName, image, 'base64', (err) => {
+			if (err) {
+				console.log(err);	
+			}
+		});
     return image;
   }
 }
