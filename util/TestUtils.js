@@ -4,22 +4,22 @@ const {Builder, By, Key, until, promise} = require('selenium-webdriver');
 const getSumFunctionScript = 'function getSum(total, num) {return total + num;};';
 
 const getPixelSumsByIdScript = function(id) {
-	return getSumFunctionScript +
-	'const canvas = document.createElement(\'canvas\');' + '' +
-	'const ctx = canvas.getContext(\'2d\');' + 'ctx.drawImage(' + id + ',0,0,' + id + '.videoHeight-1,' + id + '.videoWidth-1);' +
-	'const imageData = ctx.getImageData(0,0,' + id + '.videoHeight-1,' + id + '.videoWidth-1).data;' +
-	'const sum = imageData.reduce(getSum);' +
-	'if (sum===255*(Math.pow(' + id + '.videoHeight-1,(' + id + '.videoWidth-1)*(' + id + '.videoWidth-1)))) {' +
-	'   return 0;' +
-	'}' +
-	'return sum;';
+	return getSumFunctionScript + 'const canvas = document.createElement(\'canvas\');' 
+	+ '' 
+	+ 'const ctx = canvas.getContext(\'2d\');' 
+	+ 'ctx.drawImage(' + id + ',0,0,' + id + '.videoHeight-1,' + id + '.videoWidth-1);' 
+	+ 'const imageData = ctx.getImageData(0,0,' + id + '.videoHeight-1,' + id + '.videoWidth-1).data;' 
+	+ 'const sum = imageData.reduce(getSum);' 
+	+ 'if (sum===255*(Math.pow(' + id + '.videoHeight-1,(' + id + '.videoWidth-1)*(' + id + '.videoWidth-1)))) {'
+	+ '   return 0;' 
+	+ '}' 
+	+ 'return sum;';
 }
 
 const getStatOnce = async function(driver, pc) {
 	await driver.executeScript(stashStat(pc));
 	await waitAround(100);
 	const stat = await driver.executeScript(getStashedStat);
-	//console.log(stat)
 	return stat;
 }
 
@@ -30,7 +30,6 @@ const stashStat = function(pc) {
 }
 
 const getStashedStat = 'return window.KITEStats;';
-
 
 const waitForElementsWithTagName = async function(driver, tagName) {
   const videoElements = await driver.findElements(By.tagName(tagName));
@@ -87,6 +86,26 @@ module.exports = {
 //      }
 //    });
 //	},
+
+	getGlobalVariables: function(process){
+		const numberOfParticipant = process.argv[2];
+		const id = process.argv[3]; // To identify browsers
+		const reportPath = process.argv[4];
+		const capabilitiesPath = reportPath + '/' + id + '/capabilities.json';
+		const payloadPath = reportPath + '/payload.json';
+		const resultFilePath = reportPath + '/' + id + '/result.json';
+		const screenshotFolderPath = reportPath + '/' + id + '/screenshots';
+		let variables = {
+			numberOfParticipant: numberOfParticipant,
+			id: id,
+			capabilitiesPath: capabilitiesPath,
+			payloadPath: payloadPath,
+			resultFilePath: resultFilePath,
+			screenshotFolderPath: screenshotFolderPath
+		}
+		return variables; 
+	},
+
 	waitAround,
 
 	waitForPage: async function(driver, timeout) {
@@ -107,7 +126,8 @@ module.exports = {
       default:
         throw new Error('Unsupported wait type: ' + type);
     }
-  },
+	},
+	
 	// todo: doc
 	getStats: async function(driver, pc, getStatDuration, getStatInterval) {
 		const stats = [];
@@ -119,7 +139,9 @@ module.exports = {
 		}
 		return stats;
 	},
-	//todo: appendToFile function
+
+	// todo: appendToFile function
+
 	// todo: doc
 	writeToFile: function(fileName, content) {
   	let writeStream = fs.createWriteStream(fileName);
