@@ -1,6 +1,6 @@
 {
   "name": "kite-common",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "KITE Tests",
   "main": "index.js",
   "repository": {

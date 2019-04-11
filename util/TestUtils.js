@@ -75,6 +75,78 @@ const isDocumentReady = async function(driver) {
 	return s === "complete";
 }
 
+// todo: doc
+const writeToFile = function (fileName, content) {
+	let writeStream = fs.createWriteStream(fileName);
+
+	writeStream.write(content);
+
+	// the finish event is emitted when all data has been flushed from the stream
+	writeStream.on('finish', () => {
+			console.log('wrote all data to file');
+	});
+
+	// close the stream
+	writeStream.end();
+}
+
+// All classes and methods for all reports (testReport & stepReport)
+
+class Report {
+  constructor(name) {
+    let report = {};
+    report['name'] = name;
+    report['start'] = Date.now();
+    this.report = report;
+  }
+}
+
+class TestReport extends Report {
+  constructor(name, status) {
+    super(name);
+    this.status = status;
+    let steps = [];
+    this.report['steps'] = steps;
+    
+  }
+
+  // Add a step in steps
+  addStep(stepReport, status) {
+    this.status = status;
+    this.report.steps.push(stepReport);
+  }
+
+  // Add the end date of the test to the testReport
+  // and write the testReport to the file
+  end(resultFilePath) {
+    this.report['stop'] = Date.now();
+    writeToFile(resultFilePath, JSON.stringify(this.report));
+  }
+}
+
+class StepReport extends Report {
+  constructor(name) {
+    super(name);
+    let attachment = {};
+    attachment['type'] = 'json';
+    this.attachment = attachment;
+  }
+
+  // Create or modify a key/value pair in the attachment
+  addAttachment(key, value) {
+    this.attachment[key] = value;
+  }
+
+  // Add the attachnment, the status and the end date of the step to the stepReport 
+  end(status) {
+    this.report['attachment'] = this.attachment;
+    this.report['status'] = status;
+    this.report['stop'] = Date.now();
+  }
+}
+
+
+
 module.exports = {
 //	purgeCache: function (moduleName) {
 //    searchCache(moduleName, function (mod) {
@@ -86,6 +158,16 @@ module.exports = {
 //      }
 //    });
 //	},
+
+	TestReport,
+	StepReport,
+	
+	
+	waitAround,
+	
+	// todo: appendToFile function
+
+	writeToFile,
 
 	getGlobalVariables: function(process){
 		const numberOfParticipant = process.argv[2];
@@ -105,8 +187,6 @@ module.exports = {
 		}
 		return variables; 
 	},
-
-	waitAround,
 
 	waitForPage: async function(driver, timeout) {
 		await driver.wait(isDocumentReady(driver), timeout);
@@ -140,22 +220,6 @@ module.exports = {
 		return stats;
 	},
 
-	// todo: appendToFile function
-
-	// todo: doc
-	writeToFile: function(fileName, content) {
-  	let writeStream = fs.createWriteStream(fileName);
-
-  	writeStream.write(content);
-
-  	// the finish event is emitted when all data has been flushed from the stream
-  	writeStream.on('finish', () => {
-  	    console.log('wrote all data to file');
-  	});
-
-  	// close the stream
-  	writeStream.end();
-  },
   // todo: doc
   verifyVideoDisplayById: async function(driver, id) {
   	const sumArray = [];
