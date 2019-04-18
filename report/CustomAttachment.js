@@ -35,9 +35,7 @@ class CustomAttachment {
   }
   
   saveToFile(path) {
-    console.log('path =================' + path);
     let fileName = path + '/' + this.uuid + "-attachment." + this.fileExtention;
-    // console.log('reportpath =================' + reportPath);
     if (this.isText() && this.text != undefined) {
       let writeStream = fs.createWriteStream(fileName);
       writeStream.write(this.text);

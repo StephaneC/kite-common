@@ -3,6 +3,7 @@
 
 exports.KiteBaseTest = require('./util/KiteBaseTest');
 exports.TestStep = require('./util/TestStep');
+exports.Status = require('./report/Status');
 
 
 exports.TestUtils = require('./util/TestUtils');
