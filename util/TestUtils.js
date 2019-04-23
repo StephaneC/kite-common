@@ -189,13 +189,8 @@ module.exports = {
   	}
   	return result;
   },
-  takeScreenshot: async function(driver /*, filePath, fileName */) {
+  takeScreenshot: async function(driver) {
     const image = await driver.takeScreenshot();
-    /*fs.writeFile(fixPath(filePath) + fileName, image, 'base64', (err) => {
-			if (err) {
-				console.log(err);	
-			}
-		});*/
     return image;
   }
 }

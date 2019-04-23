@@ -1,8 +1,8 @@
 const Status = {
-  FAILED: 'FAILED',
-  BROKEN: 'BROKEM',
-  PASSED: 'PASSED',
-  SKIPPED: 'SKIPPED'
+  FAILED: "failed",
+  BROKEN: "broken",
+  PASSED: "passed",
+  SKIPPED: "skipped"
 }
 
 module.exports = Status;

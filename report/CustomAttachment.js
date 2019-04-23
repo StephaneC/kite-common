@@ -1,4 +1,3 @@
-const {TestUtils} = require('kite-common');
 const fs = require('fs');
 const generateUUID = require('./generate-uuid');
 
@@ -35,9 +34,9 @@ class CustomAttachment {
   }
   
   saveToFile(path) {
-    let fileName = path + '/' + this.uuid + "-attachment." + this.fileExtention;
+    let fileName = this.uuid + "-attachment." + this.fileExtention;
     if (this.isText() && this.text != undefined) {
-      let writeStream = fs.createWriteStream(fileName);
+      let writeStream = fs.createWriteStream(path + '/' + fileName);
       writeStream.write(this.text);
       writeStream.on('finish', () => {
           console.log('wrote all data to file');
@@ -45,7 +44,7 @@ class CustomAttachment {
       writeStream.end();
       
     } else {
-      fs.writeFile(fileName, this.screenshot, 'base64', (err) => {
+      fs.writeFile(path + '/screenshots/' + fileName, this.screenshot, 'base64', (err) => {
         if (err) {
           console.log(err);	
         }

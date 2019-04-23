@@ -1,3 +1,5 @@
+// ATM: Useless
+
 const Entity = require('./Entity');
 
 /**

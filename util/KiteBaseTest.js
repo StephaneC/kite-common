@@ -1,11 +1,10 @@
 const {AllureTestReport, Reporter} = require('../report');
 
-const kiteAllureFolder = '../../../../kite-allure-reports';
-
 class KiteBaseTest {
   constructor(name, payload, reportPath) {
     // Allure test report
     this.name = name;
+    this.reportPath = reportPath;
     this.report = new AllureTestReport(this.name);
     
     this.reporter = new Reporter(reportPath);
@@ -17,6 +16,10 @@ class KiteBaseTest {
     }
   }
 
+  setTestReport(report) {
+    this.report = report;
+  }
+  
   async testScript() {
     throw new Error('You must implement this function');
   }

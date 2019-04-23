@@ -16,6 +16,13 @@ class AllureTestReport extends AllureStepReport {
     this.historyId = generateUUID();
   }
 
+  extract(otherReport) {
+    this.labels = otherReport.labels;
+    this.links = [];
+    this.uuid = otherReport.uuid;
+    this.historyId = generateUUID();
+  }
+
   setFullName(fullName) {
     this.fullName = fullName;
   }
@@ -29,12 +36,10 @@ class AllureTestReport extends AllureStepReport {
   }
 
   getJsonBuilder() {
-    var builder = super.getJsonBuilder();
-    builder['uuid'] = this.uuid;
-    builder['fullName'] = this.fullName;
-    builder['historyId'] = this.historyId;
-    builder['links'] = this.links;
-    builder['labels'] = this.labels;
+    let temp = super.getJsonBuilder();
+    let builder = {};
+    builder['status'] = temp['status'];
+    builder['steps'] = temp['steps'];
     return builder;
   }
 }
