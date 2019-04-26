@@ -1,5 +1,14 @@
 const fs = require('fs');
 const {Builder, By, Key, until, promise} = require('selenium-webdriver');
+const statsUtils = require('./statsUtils');
+
+const extractStats = function(senderStats, receiverStats) {
+	return statsUtils.extractStats(senderStats, receiverStats);
+}
+
+const extractJson = function(senderStats, direction) {
+	return statsUtils.extractJson(senderStats, direction);
+}
 
 const getSumFunctionScript = 'function getSum(total, num) {return total + num;};';
 
@@ -30,6 +39,29 @@ const stashStat = function(pc) {
 }
 
 const getStashedStat = 'return window.KITEStats;';
+
+const getSDPMessage = async function(driver, peerConnection, type) {
+	const sdpObj = await driver.executeScript(sdpMessageScript(peerConnection, type));
+	await waitAround(1000);
+	return sdpObj;
+}
+
+const sdpMessageScript = function(peerConnection, type) {
+	switch (type) {
+		case 'offer':
+			return "var SDP;"
+			+ "try {SDP = " + peerConnection + ".remoteDescription;} catch (exception) {} "
+			+ "if (SDP) {return SDP;} else {return 'unknown';}";
+		case "answer":
+			return "var SDP;"
+			+ "try {SDP = " + peerConnection + ".localDescription;} catch (exception) {} "
+			+ "if (SDP) {return SDP;} else {return 'unknown';}";
+		default: 
+			throw new Error("Not a valid type for sdp message.");
+	}
+}
+
+
 
 const waitForElementsWithTagName = async function(driver, tagName) {
   const videoElements = await driver.findElements(By.tagName(tagName));
@@ -153,16 +185,29 @@ module.exports = {
 	},
 	
 	// todo: doc
-	getStats: async function(driver, pc, getStatDuration, getStatInterval) {
-		const stats = [];
+	getStats: async function(driver, pc, getStatDuration, getStatInterval, selectedStats) {
+		// const stats = [];
+		let stats = {};
 		let i = 0;
 		for (i = 0; i < getStatDuration; i += getStatInterval) {
-			const stat = await getStatOnce(driver, pc);
-			stats.push(stat);
+			// let stat = {}
+			// stat['stats'] = await getStatOnce(driver, pc);
+			let stat = await getStatOnce(driver, pc);
+			if (i == 0) {
+				stats['stats'] = [];
+				let offer = await getSDPMessage(driver, pc, "offer");
+				let answer = await getSDPMessage(driver, pc, "answer");
+				stats['offer'] = offer;
+				stats['answer'] = answer;
+			}
+			stats['stats'].push(stat);
 			await waitAround(getStatInterval);
 		}
-		return stats;
+		return statsUtils.buildClientStatObject(stats, selectedStats);
 	},
+
+	extractStats,
+	extractJson,
 
   // todo: doc
   verifyVideoDisplayById: async function(driver, id) {
@@ -186,7 +231,7 @@ module.exports = {
   		console.log('Verified video display for [' + id + '] successfully with ' + sumArray[0] + ' and ' + sumArray[1]);
   		result['result'] = videoCheck;
   		result['details'] = sumArray;
-  	}
+		}
   	return result;
   },
   takeScreenshot: async function(driver) {
