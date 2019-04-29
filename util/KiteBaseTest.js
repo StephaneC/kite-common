@@ -31,6 +31,7 @@ class KiteBaseTest {
       this.timeout = payload.testTimeout * 1000;
       this.statsCollectionDuration = payload.statsCollectionDuration * 1000;
       this.statsCollectionInterval = payload.statsCollectionInterval * 1000;
+      this.selectedStats = payload.selectedStats;
     }
   }
 

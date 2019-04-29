@@ -6,8 +6,8 @@ module.exports = {
 		switch(browser) {
 		  case 'chrome': {
 		    const chromeOptions = new chrome.Options();
-        chromeOptions.addArguments("use-fake-ui-for-media-stream");
-        chromeOptions.addArguments("use-fake-device-for-media-stream");
+        chromeOptions.addArguments("--use-fake-ui-for-media-stream");
+        chromeOptions.addArguments("--use-fake-device-for-media-stream");
         // todo : more flags options here
         return chromeOptions;
 	    }
