@@ -2,6 +2,7 @@
 
 
 exports.KiteBaseTest = require('./util/KiteBaseTest');
+exports.KiteTestError = require('./report/KiteTestError');
 exports.TestStep = require('./util/TestStep');
 exports.Status = require('./report/Status');
 

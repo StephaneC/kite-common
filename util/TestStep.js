@@ -1,4 +1,4 @@
-const {AllureStepReport, Status} = require('../report');
+const {AllureStepReport, KiteTestError, Status} = require('../report');
 
 /**
  * Class: TestStep
@@ -15,21 +15,27 @@ class TestStep {
     throw new Error('You must implement this function');
   }
 
-  async execute(allureTestReport, reporter) {
+  async execute(KiteBaseTest) {
     try {
-      if(allureTestReport.status == Status.PASSED) {
+      if(KiteBaseTest.report.status == Status.PASSED) {
         console.log('Executing step: ' + this.stepDescription());
-        await this.step(allureTestReport, reporter);
+        await this.step(KiteBaseTest);
 
       } else {
         this.skip();
       }
       await this.finish();
-      await allureTestReport.addStepReport(this.report.getJsonBuilder()); 
+      await KiteBaseTest.report.addStepReport(this.report.getJsonBuilder()); 
 
-    } catch(error) {
-      console.log(error);
-      allureTestReport.status = Status.BROKEN;
+    } catch (error) {
+      if(error instanceof KiteTestError) {
+        console.log(error.message);
+        KiteBaseTest.report.status = error.status;
+      } else {
+        console.log(error);
+        KiteBaseTest.report.status = Status.BROKEN;
+      }
+
     }
   }
 

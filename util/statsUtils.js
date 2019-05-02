@@ -14,7 +14,7 @@ function buildClientStatObject(clientStats, selectedStats) {
       let jsonStatObjectBuilder = buildSingleStatObject(clientStatArray[i], selectedStats);
       jsonClientStatArray.push(jsonStatObjectBuilder);
     }
-    if(selectedStats == null) {
+    if(selectedStats == undefined) {
       // add SDP offer stuff
       let sdpBuilder = {};
       let tmpsdpOffer = clientStats["offer"];
@@ -41,9 +41,9 @@ function buildSingleStatObject(statArray, selectedStats) {
   let builder = {};
   let stat = {};
   let selectedStatsString = JSON.stringify(selectedStats);
-  if (statArray != null) {
+  if (statArray != undefined) {
     for(var i = 0; i < statArray.length; i++) {
-      if (statArray[i] != null) {
+      if (statArray[i] != undefined) {
         var type = statArray[i].type;
         if(selectedStatsString == "null" || selectedStatsString.length == 0 || selectedStatsString.indexOf(type) != -1) {
           var statObject = null;

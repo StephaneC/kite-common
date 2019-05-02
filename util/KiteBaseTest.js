@@ -1,13 +1,19 @@
 const {AllureTestReport, Reporter} = require('../report');
 
 class KiteBaseTest {
-  constructor(name, payload, reportPath) {
+  constructor(name, globalVariables, capabilities, payload) {
     // Allure test report
     this.name = name;
-    this.reportPath = reportPath;
-    this.report = new AllureTestReport(this.name);
+    this.numberOfParticipant = globalVariables.numberOfParticipant;
+    this.id = globalVariables.id;
+    this.reportPath = globalVariables.reportPath;
+    this.capabilities = capabilities;
     
-    this.reporter = new Reporter(reportPath);
+    // default timeout
+    this.timeout = 60 * 1000;
+
+    this.report = new AllureTestReport(this.name);
+    this.reporter = new Reporter(this.reportPath);
     
     // fillOutReport();
     if(payload != undefined) {
@@ -29,7 +35,7 @@ class KiteBaseTest {
       // Todo: Add some info
       this.url = payload.url;
       this.timeout = payload.testTimeout * 1000;
-      this.statsCollectionDuration = payload.statsCollectionDuration * 1000;
+      this.statsCollectionTime = payload.statsCollectionTime * 1000;
       this.statsCollectionInterval = payload.statsCollectionInterval * 1000;
       this.selectedStats = payload.selectedStats;
     }
