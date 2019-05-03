@@ -188,33 +188,10 @@ module.exports = {
   },
   
   // todo: doc
-  /*getStats: async function(driver, pc, getStatDuration, getStatInterval, selectedStats) {
-    // const stats = [];
-    let stats = {};
-    let i = 0;
-    for (i = 0; i < getStatDuration; i += getStatInterval) {
-      // let stat = {}
-      // stat['stats'] = await getStatOnce(driver, pc);
-      let stat = await getStatOnce(driver, pc);
-      if (i == 0) {
-        stats['stats'] = [];
-        let offer = await getSDPMessage(driver, pc, "offer");
-        let answer = await getSDPMessage(driver, pc, "answer");
-        stats['offer'] = offer;
-        stats['answer'] = answer;
-      }
-      stats['stats'].push(stat);
-      await waitAround(getStatInterval);
-    }
-    return statsUtils.buildClientStatObject(stats, selectedStats);
-  },*/
   getStats: async function(stepInfo) {
-    // const stats = [];
     let stats = {};
     let i = 0;
     for (i = 0; i < stepInfo.statsCollectionTime; i += stepInfo.statsCollectionInterval) {
-      // let stat = {}
-      // stat['stats'] = await getStatOnce(driver, pc);
       let stat = await getStatOnce(stepInfo.driver, stepInfo.pc);
       if (i == 0) {
         stats['stats'] = [];

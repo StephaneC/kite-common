@@ -1,4 +1,5 @@
 const {AllureTestReport, Reporter} = require('../report');
+const TestUtils = require('./TestUtils');
 
 class KiteBaseTest {
   constructor(name, globalVariables, capabilities, payload) {
@@ -43,6 +44,14 @@ class KiteBaseTest {
 
   setDescription(description) {
     this.report.setDescription(description);
+  }
+
+  async run() {
+    await this.testScript();
+    this.report.setStopTimestamp();
+    this.reporter.generateReportFiles();
+    let value = this.report.getJsonBuilder();
+    TestUtils.writeToFile(this.reportPath + '/result.json', JSON.stringify(value));
   }
 }
 
