@@ -1,6 +1,5 @@
 const WebDriverUtils = require('./WebDriverUtility.js');
-
-const {Builder, By, Key, until, promise} = require('selenium-webdriver');
+const {Builder} = require('selenium-webdriver');
 module.exports = {
 	getDriver: async function(capabilities, remoteAddress) {
 		//to make sure the cap doesn't has anything weird:
@@ -9,15 +8,25 @@ module.exports = {
 		cap.version = capabilities.version;
 		cap.platformName = capabilities.platformName;
 		cap.platform = capabilities.platform;
-		const browserName = cap.browserName;
-		const options = WebDriverUtils.getOptions(browserName)
-		switch (browserName) {
+
+		const options =  WebDriverUtils.getOptions(cap);
+		switch (cap.browserName) {
 			case 'chrome': {
-				return new Builder().forBrowser(browserName)
-          .setChromeOptions(options)
-          .usingServer(remoteAddress)
-          .withCapabilities(cap)
-          .build();
+				cap['goog:chromeOptions'] =  options;
+        return new Builder()
+					.forBrowser('chrome')
+					.usingServer(remoteAddress)
+					.withCapabilities(cap)
+					.build();
+			}
+			case 'firefox': {
+				cap.acceptInsecureCerts = true;
+        return new Builder()
+					.forBrowser('firefox')
+					.usingServer(remoteAddress)
+					.withCapabilities(cap)
+					.setFirefoxOptions(options)
+					.build();
 			}
 			default:
 				throw new Error('Unsupported browser type: ' + browserName);

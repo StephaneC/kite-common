@@ -7,6 +7,7 @@ class KiteBaseTest {
     this.name = name;
     this.numberOfParticipant = globalVariables.numberOfParticipant;
     this.id = globalVariables.id;
+    this.uuid = globalVariables.uuid.split('-').join('');
     this.reportPath = globalVariables.reportPath;
     this.capabilities = capabilities;
     
