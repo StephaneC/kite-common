@@ -1,27 +1,27 @@
 {
-  "_from": "kite-common@0.0.6",
-  "_id": "kite-common@0.0.6",
+  "_from": "kite-common@0.0.8",
+  "_id": "kite-common@0.0.8",
   "_inBundle": false,
-  "_integrity": "sha512-Jfga1AjEYuJ9pjrYQLP7jZFZ3A3GE9b9Lwen3YIiS20SqQrLMMBLB3mImuXNER/AVZ+fE/PEbWFXoz6ne/Fkxw==",
+  "_integrity": "sha512-0P2crpFs4STBnM1anpsS0eUvDk2FkQ8DwPUdgSEJcaycg9P6WDPnISHIdeOym0KfJTVmtnPi+JAOkc9vMDDsWw==",
   "_location": "/kite-common",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "kite-common@0.0.6",
+    "raw": "kite-common@0.0.8",
     "name": "kite-common",
     "escapedName": "kite-common",
-    "rawSpec": "0.0.6",
+    "rawSpec": "0.0.8",
     "saveSpec": null,
-    "fetchSpec": "0.0.6"
+    "fetchSpec": "0.0.8"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/kite-common/-/kite-common-0.0.6.tgz",
-  "_shasum": "dceb12bc49367d5104b4f1f447bbcf333bd68ad4",
-  "_spec": "kite-common@0.0.6",
-  "_where": "C:\\newGitHub\\KITE-Sample-Tests\\KITE-Janus-Test\\js",
+  "_resolved": "https://registry.npmjs.org/kite-common/-/kite-common-0.0.8.tgz",
+  "_shasum": "486e8bea1e462b964138a1179128fa9f1dce7552",
+  "_spec": "kite-common@0.0.8",
+  "_where": "C:\\newGitHub\\KITE-Sample-Tests\\KITE-Mediasoup-Test\\js",
   "bugs": {
     "url": "https://github.com/CoSMoSoftware/kite-common/issues"
   },
@@ -40,5 +40,5 @@
     "type": "git",
     "url": "git+https://github.com/CoSMoSoftware/kite-common.git"
   },
-  "version": "0.0.8"
+  "version": "0.1.0"
 }

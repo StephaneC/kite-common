@@ -1,9 +1,8 @@
-const {RTCStatObject, RTCCodecStats, RTCMediaStreamStats, RTCRTPStreamStats, RTCPeerConnectionStats, RTCTransportStats, RTCIceCandidatePairStats, RTCIceCandidateStats} = require('../RTCstats');
+const {RTCCodecStats, RTCMediaStreamStats, RTCRTPStreamStats, RTCPeerConnectionStats, RTCTransportStats, RTCIceCandidatePairStats, RTCIceCandidateStats} = require('../RTCstats');
 
 const candidatePairStats = ["bytesSent", "bytesReceived", "currentRoundTripTime", "totalRoundTripTime", "timestamp"];
 const inboundStats = ["bytesReceived", "packetsReceived", "packetsLost", "jitter", "timestamp"];
 const outboundStats = ["bytesSent", "timestamp"];
-
 
 function buildClientStatObject(clientStats, selectedStats) {
   let builder = {};
