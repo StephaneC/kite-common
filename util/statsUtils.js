@@ -4,80 +4,6 @@ const candidatePairStats = ["bytesSent", "bytesReceived", "currentRoundTripTime"
 const inboundStats = ["bytesReceived", "packetsReceived", "packetsLost", "jitter", "timestamp"];
 const outboundStats = ["bytesSent", "timestamp"];
 
-
-// Jitsi Stats
-function buildPCStatObject(stats, selectedStats) {
-  let builder = {};
-  try {
-    let clientStatArray = stats['stats'];
-    let jsonClientStatArray = [];
-    for(let i = 0; i < clientStatArray.length; i++) {
-      let rtcStatObject = buildSingleRTCStatObject(clientStatArray[i], selectedStats);
-      jsonClientStatArray.push(rtcStatObject);
-    }
-    builder['statsArray'] = jsonClientStatArray;
-    return builder;
-  } catch (error) {
-    console.log(error);
-    return {};
-  }
-}
-
-function buildSingleRTCStatObject(statsArray, selectedStats) {
-  let builder = {};
-  let stat = {};
-  let type;
-  let statObject;
-  let statsObjectArray = statsArray[0];
-  let selectedStatsString = JSON.stringify(selectedStats);
-  if (statsObjectArray != undefined) {
-    for(let i = 0; i < statsObjectArray.length; i++) {
-      if (statsObjectArray[i] != undefined) {
-        type = statsObjectArray[i].type;
-        if (selectedStatsString == null || selectedStatsString.length == 0 || selectedStatsString.indexOf(type) != -1) {
-          statObject = null;
-          switch (type) {
-            case "ssrc":
-              let id = statsObjectArray[i].id;
-              if (id.indexOf('recv') != -1) {
-                type = "inbound-rtp";
-                statObject = new RTCRTPStreamStats(statsObjectArray[i], true);
-              } else {
-                type = "outbound-rtp";
-                statObject = new RTCRTPStreamStats(statsObjectArray[i], false);
-              }
-              break;
-            case 'googCandidatePair':
-              type = 'candidate-pair';
-              statObject = new RTCIceCandidatePairStats(statsObjectArray[i]);
-              break;
-          }
-          if(statObject != null) {
-            if(stat[type] === undefined) {
-              stat[type] = [];
-            }
-            stat[type].push(statObject);
-          }
-        }
-      }
-    }
-  }
-  if(stat != undefined) {
-    for(let i = 0; i < Object.keys(stat).length; i++) {
-      let idx = Object.keys(stat)[i];
-      let tmp = {};
-      for(let j = 0; j < stat[idx].length; j++) {
-        let jdx = stat[idx][j];
-        tmp[jdx.id] = jdx.getJsonBuilder();
-      }
-      builder[idx] = tmp;
-    }
-  }
-  return builder;
-}
-
-
-
 function buildClientStatObject(clientStats, selectedStats) {
   let builder = {};
   try {
@@ -461,5 +387,4 @@ module.exports = {
   extractStats,
   extractJson,
   buildClientStatObject,
-  buildPCStatObject,
 }

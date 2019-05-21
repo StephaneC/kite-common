@@ -11,9 +11,6 @@ const extractJson = function(senderStats, direction) {
   return statsUtils.extractJson(senderStats, direction);
 }
 
-const buildPCStatObject = function(stats, selectedStats) {
-  return statsUtils.buildPCStatObject(stats, selectedStats);
-}
 
 const getSumFunctionScript = 'function getSum(total, num) {return total + num;};';
 
@@ -41,28 +38,6 @@ const getPixelSumByIndexScript = function(index) {
   + "if (sum===255*(Math.pow(video.videoHeight-1,(video.videoWidth-1)*(video.videoWidth-1))))   return 0;"
   + "return sum;} else {return 0 }";
 }
-
-// const getStatOnce = async function(driver, statsType) {
-//   await driver.executeScript(stashStat(statsType));
-//   await waitAround(100);
-//   const stat = await driver.executeScript(getStashedStat(statsType));
-//   return stat;
-// }
-
-// const getStatOnce = async function(driver, pc) {
-//   await driver.executeScript(stashStat(pc));
-//   await waitAround(100);
-//   const stat = await driver.executeScript(getStashedStat);
-//   return stat;
-// }
-
-// const stashStat = function(pc) {
-//   return pc + '.getStats().then(data => {' +
-//   'window.KITEStats = [...data.values()];' +
-//   '});'
-// }
-
-// const getStashedStat = 'return window.KITEStats;';
 
 
 const getStashedStat = function(statsType) {
@@ -236,28 +211,9 @@ const waitForElementsWithClassName = async function(driver, className) {
   return videoElements.length > 0;
 };
 
-const	searchCache = function (moduleName, callback) {
-  var mod = require.resolve(moduleName);
-
-  if (mod && ((mod = require.cache[mod]) !== undefined)) {
-    (function traverse(mod) {
-      mod.children.forEach(function (child) {
-        traverse(child);
-      });
-      callback(mod);
-    }(mod));
-  }
-}
 
 const	waitAround = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-const fixPath = function(pathOrUrl) {
-  if (!pathOrUrl.endsWith("/")) {
-    return pathOrUrl + "/";
-  }
-  return pathOrUrl;
 }
 
 const isDocumentReady = async function(driver) {
@@ -281,18 +237,7 @@ const writeToFile = function (fileName, content) {
 }
 
 module.exports = {
-  KiteTestException,
-//	purgeCache: function (moduleName) {
-//    searchCache(moduleName, function (mod) {
-//      delete require.cache[mod.id];
-//    });
-//    Object.keys(module.constructor._pathCache).forEach(function(cacheKey) {
-//      if (cacheKey.idOf(moduleName)>0) {
-//        delete module.constructor._pathCache[cacheKey];
-//      }
-//    });
-//	},
-  
+  KiteTestException, 
   waitAround,
   
   // todo: appendToFile function
@@ -324,19 +269,19 @@ module.exports = {
   },
 
   waitForPage: async function(driver, timeout) {
-    await driver.wait(isDocumentReady(driver), timeout);
+    await driver.wait(isDocumentReady(driver), timeout * 1000);
   },
 
   waitForElement: async function(driver, type, value, timeout) {
     switch(type) {
       case 'id': {
-        return driver.wait(waitForElementsWithId(driver, value), timeout);
+        return driver.wait(waitForElementsWithId(driver, value), timeout * 1000);
       }
       case 'className': {
-        return driver.wait(waitForElementsWithClassName(driver, value), timeout);
+        return driver.wait(waitForElementsWithClassName(driver, value), timeout * 1000);
       }
       case 'tagName': {
-        return driver.wait(waitForElementsWithTagName(driver, value), timeout);
+        return driver.wait(waitForElementsWithTagName(driver, value), timeout * 1000);
       }
       default:
         throw new Error('Unsupported wait type: ' + type);
@@ -354,7 +299,6 @@ module.exports = {
   getStats: async function(stepInfo, statsType, pc) {
     let stats = {};
     for (let i = 0; i < stepInfo.statsCollectionTime; i += stepInfo.statsCollectionInterval) {
-      // let stat = await getStatOnce(stepInfo.driver, statsType);
       let stat = await this.getStatOnce(stepInfo.driver, statsType, pc);
       if (i == 0) {
         stats['stats'] = [];
@@ -364,14 +308,13 @@ module.exports = {
         stats['answer'] = answer;
       }
       stats['stats'].push(stat);
-      await waitAround(stepInfo.statsCollectionInterval);
+      await waitAround(stepInfo.statsCollectionInterval * 1000);
     }
     return statsUtils.buildClientStatObject(stats, stepInfo.selectedStats);
   },
 
   extractStats,
   extractJson,
-  buildPCStatObject,
 
   // todo: doc
   verifyVideoDisplayByIndex: async function(driver, index) {

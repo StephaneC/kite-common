@@ -26,14 +26,6 @@ const getFirefoxOptions = function(browser) {
 	}
 	firefoxOptions.setPreference("media.navigator.streams.fake", true);
 
-	// if (browser.headless) {
-	// 	firefoxOptions.addArguments('-headless');
-	// }
-
-	// if (browser.windowSize) {
-	// 	firefoxOptions.addArguments("-window-size " + browser.windowSize);
-	// }
-
 	return firefoxOptions;
 }
 

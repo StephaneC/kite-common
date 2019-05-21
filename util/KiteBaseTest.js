@@ -12,7 +12,7 @@ class KiteBaseTest {
     this.capabilities = capabilities;
     
     // default timeout
-    this.timeout = 60 * 1000;
+    this.timeout = 60;
 
     this.report = new AllureTestReport(this.name);
     this.reporter = new Reporter(this.reportPath);
@@ -36,10 +36,16 @@ class KiteBaseTest {
     if (payload != undefined) {
       // Todo: Add some info
       this.url = payload.url;
-      this.timeout = payload.testTimeout * 1000;
-      this.statsCollectionTime = payload.statsCollectionTime * 1000;
-      this.statsCollectionInterval = payload.statsCollectionInterval * 1000;
-      this.selectedStats = payload.selectedStats;
+      this.timeout = payload.testTimeout;
+      // getStats info
+      let getStats = payload.getStats;
+      if (getStats != undefined) {
+        this.getStats = getStats.enabled;
+        this.statsCollectionTime = getStats.statsCollectionTime;
+        this.statsCollectionInterval = getStats.statsCollectionInterval;
+        this.peerConnections = getStats.peerConnections;
+        this.selectedStats = getStats.selectedStats;
+      }
     }
   }
 
