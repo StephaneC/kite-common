@@ -37,6 +37,7 @@ class KiteBaseTest {
       // Todo: Add some info
       this.url = payload.url;
       this.timeout = payload.testTimeout;
+      this.takeScreenshot = payload.takeScreenshotForEachTest;
       // getStats info
       let getStats = payload.getStats;
       if (getStats != undefined) {

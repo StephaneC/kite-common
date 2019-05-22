@@ -6,20 +6,20 @@ const getFirefoxOptions = function(browser) {
   let profile = path + "/third_party/";
   if (profile != undefined) {
     switch(browser.platform) {
-      case "WINDOWS": {
+      case "Windows": {
         profile += "firefox-h264-profiles/h264-windows";
         break;
       }
-      case "MAC": {
+      case "Mac": {
         profile += "firefox-h264-profiles/h264-mac";
         break;
       }
-      case "LINUS": {
+      case "Linux": {
         profile += "firefox-h264-profiles/h264-linux";
         break;
       }
     }
-    firefoxOptions = new firefox.Options().setProfile('C:/newGitHub/KITE-2.0/third_party/firefox-h264-profiles/h264-windows');
+    firefoxOptions = new firefox.Options().setProfile(profile);
   } else {
     console.log("FIREFOX: Some tests require specific profile for firefox to work properly.");
     firefoxOptions = new firefox.Options();	
@@ -28,7 +28,6 @@ const getFirefoxOptions = function(browser) {
 
   return firefoxOptions;
 }
-
 
 module.exports = {
   getOptions: function(browser) {
