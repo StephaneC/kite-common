@@ -377,4 +377,15 @@ module.exports = {
     await stepInfo.driver.get(stepInfo.url);
     await this.waitForPage(stepInfo.driver, stepInfo.timeout); 
   },
+
+  waitVideos: async function(stepInfo, videoElements) {
+    let videos = [];
+    let i = 0;
+    while (videos.length < stepInfo.numberOfParticipant && i < stepInfo.timeout) {
+      videos = await stepInfo.driver.findElements(videoElements);
+      i++;
+      await waitAround(1000); // waiting 1s after each iteration
+      }
+    return i;
+  }
 }
