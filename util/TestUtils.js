@@ -1,7 +1,7 @@
 const fs = require('fs');
 const {Builder, By, Key, until, promise} = require('selenium-webdriver');
 const statsUtils = require('./statsUtils');
-const KiteTestException = require('../report');
+const {KiteTestError, Status} = require('../report');
 
 const extractStats = function(senderStats, receiverStats) {
   return statsUtils.extractStats(senderStats, receiverStats);
@@ -237,7 +237,7 @@ const writeToFile = function (fileName, content) {
 }
 
 module.exports = {
-  KiteTestException, 
+  KiteTestError, 
   waitAround,
   
   // todo: appendToFile function
@@ -386,6 +386,11 @@ module.exports = {
       i++;
       await waitAround(1000); // waiting 1s after each iteration
       }
-    return i;
+    // Make sure that it has not timed out
+    if (i === stepInfo.timeout) {
+      throw new KiteTestError(Status.FAILED, "unable to find " +
+        stepInfo.numberOfParticipant + " <video> element on the page. Number of video found = " +
+        videos.length);
+    }
   }
 }
