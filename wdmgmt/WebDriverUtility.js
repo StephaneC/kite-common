@@ -6,16 +6,16 @@ const getFirefoxOptions = function(browser) {
   if (kiteHome != undefined) {
     let path = kiteHome.split("\\").join('/');
     let profile = path + "/third_party/";
-    switch(browser.platform) {
-      case "Windows": {
+    switch(browser.platform.toUpperCase()) {
+      case "WINDOWS": {
         profile += "firefox-h264-profiles/h264-windows";
         break;
       }
-      case "Mac": {
+      case "MAC": {
         profile += "firefox-h264-profiles/h264-mac";
         break;
       }
-      case "Linux": {
+      case "LINUX": {
         profile += "firefox-h264-profiles/h264-linux";
         break;
       }
