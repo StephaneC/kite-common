@@ -25,6 +25,15 @@ class TestStep {
         this.skip();
       }
       await this.finish();
+      
+      // if(KiteBaseTest.running) {
+      //   KiteBaseTest.io.emit('step finished', {id: KiteBaseTest.id}, function() {
+      //     console.log('Step finished');
+      //   });
+      //   KiteBaseTest.io.close();
+      //   KiteBaseTest.runninb = false;
+      // }
+
       await KiteBaseTest.report.addStepReport(this.report.getJsonBuilder()); 
 
     } catch (error) {
