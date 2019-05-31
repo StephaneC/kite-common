@@ -13,7 +13,7 @@ function buildClientStatObject(clientStats, selectedStats) {
       let jsonStatObjectBuilder = buildSingleStatObject(clientStatArray[i], selectedStats);
       jsonClientStatArray.push(jsonStatObjectBuilder);
     }
-    if(selectedStats == undefined) {
+    if(typeof selectedStats === "undefined") {
       // add SDP offer stuff
       let sdpBuilder = {};
       let tmpsdpOffer = clientStats["offer"];
@@ -40,9 +40,9 @@ function buildSingleStatObject(statArray, selectedStats) {
   let builder = {};
   let stat = {};
   let selectedStatsString = JSON.stringify(selectedStats);
-  if (statArray != undefined) {
+  if (typeof statArray !== "undefined") {
     for(var i = 0; i < statArray.length; i++) {
-      if (statArray[i] != undefined) {
+      if (typeof statArray[i] !== "undefined") {
         var type = statArray[i].type;
         if(selectedStatsString == "null" || selectedStatsString.length == 0 || selectedStatsString.indexOf(type) != -1) {
           var statObject = null;
@@ -81,7 +81,7 @@ function buildSingleStatObject(statArray, selectedStats) {
               break;
           }
           if(statObject != null) {
-            if(stat[type] === undefined) {
+            if(typeof stat[type] === "undefined") {
               stat[type] = [];
             }
             stat[type].push(statObject);
@@ -90,7 +90,7 @@ function buildSingleStatObject(statArray, selectedStats) {
       }
     } 
   }
-  if(!(stat === undefined)) {
+  if(!(typeof stat === "undefined")) {
     for(let i = 0; i < Object.keys(stat).length; i++) {
       let idx = Object.keys(stat)[i];
       let tmp = {};
@@ -139,10 +139,10 @@ function getRTCStats(jsonObject, stats, mediaType) {
 
 function extractStats(senderStats, receiverStats) {
   let builder = {};
-  if(!(senderStats === undefined)) {
+  if(!(typeof senderStats === "undefined")) {
     builder['localPC'] = extractJson(senderStats, "out");
   }
-  if(receiverStats != undefined) {
+  if(typeof receiverStats !== "undefined") {
     let i = 0;
     for(let j = 0; j < receiverStats.length; j++){
       builder["remotePC[" + i++ + "]"] = extractJson(receiverStats[j], "in");
@@ -155,8 +155,8 @@ function extractJson(jsonObj, direction) {
   let builder = {};
   let jsonArray = jsonObj['statsArray'];
   let noStats = 0;
-  if(jsonObj != undefined) {
-    if(jsonArray != undefined) {
+  if(typeof jsonObj !== "undefined") {
+    if(typeof jsonArray !== "undefined") {
       noStats = jsonArray.length;
     }
     for(let i = 0; i < noStats; i++) {
@@ -265,19 +265,19 @@ function computeBitrate(jsonObject, noStats, direction, mediaType) {
     let jsonKey = getJsonKey(direction);
     for(let i = 0; i < noStats; i++) {
       let s;
-      if(!(jsonObject[jsonObjName + i] === undefined)) {
+      if(!(typeof jsonObject[jsonObjName + i] === "undefined")) {
         s = jsonObject[jsonObjName + i][jsonKey];
       }
-      if(s != undefined && !("NA" === s)) {
+      if(typeof s !== "undefined" && !("NA" === s)) {
         b = parseFloat(s);
         bytesStart = (bytesStart == 0 || b < bytesStart) ? b : bytesStart;
         bytesEnd = (bytesEnd == 0 || b > bytesEnd) ? b : bytesEnd;
       }
       let ts;
-      if(!(jsonObject[jsonObjName + i] === undefined)) {
+      if(!(jsonObject[jsonObjName + i] === "undefined")) {
         ts = jsonObject[jsonObjName + i]["timestamp"];
       } 
-      if (ts != undefined && !("NA" === s)) {
+      if (typeof ts !== "undefined" && !("NA" === s)) {
         b = parseFloat(ts);
         if (i === 0) {
           tsStart = b;
@@ -334,7 +334,7 @@ function computePacketsLoss(jsonObject, noStats, mediaType) {
   }
   try {
     obj = jsonObject["inbound-" + mediaType + "_" + (noStats - 1)];
-    if(obj != undefined) {
+    if(typeof obj !== "undefined") {
       let s = obj["packetsReceived"];
       let l = obj["packetsLost"];
       if(s != null && !("NA" === s) && l != null && !("NA" === l)) {

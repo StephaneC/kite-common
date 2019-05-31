@@ -2,10 +2,11 @@ const firefox = require('selenium-webdriver/firefox');
 
 const getFirefoxOptions = function(browser) {
   let firefoxOptions;
-  let path = process.env.KITE_HOME.split("\\").join('/');
-  let profile = path + "/third_party/";
-  if (profile != undefined) {
-    switch(browser.platform) {
+  let kiteHome = process.env.KITE_HOME;
+  if(typeof kiteHome !== "undefined") {
+    let path = kiteHome.split("\\").join('/');
+    let profile = path + "/third_party/";
+    switch(browser.platform.toUpperCase()) {
       case "WINDOWS": {
         profile += "firefox-h264-profiles/h264-windows";
         break;
@@ -14,21 +15,18 @@ const getFirefoxOptions = function(browser) {
         profile += "firefox-h264-profiles/h264-mac";
         break;
       }
-      case "LINUS": {
+      case "LINUX": {
         profile += "firefox-h264-profiles/h264-linux";
         break;
       }
     }
-    firefoxOptions = new firefox.Options().setProfile('C:/newGitHub/KITE-2.0/third_party/firefox-h264-profiles/h264-windows');
+    firefoxOptions = new firefox.Options().setProfile(profile);
+    firefoxOptions.setPreference("media.navigator.streams.fake", true);
   } else {
-    console.log("FIREFOX: Some tests require specific profile for firefox to work properly.");
-    firefoxOptions = new firefox.Options();	
+    throw new Error("KITE_HOME is not defined");
   }
-  firefoxOptions.setPreference("media.navigator.streams.fake", true);
-
   return firefoxOptions;
 }
-
 
 module.exports = {
   getOptions: function(browser) {

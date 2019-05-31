@@ -36,11 +36,11 @@ class StatusDetails {
     builder['muted'] = this.muted;
     builder['flaky'] = this.flaky;
 
-    if (this.message != undefined) {
+    if (typeof this.message !== "undefined") {
       builder['message'] = this.message;
     }
 
-    if (this.trace != undefined) {
+    if (typeof this.trace !== "undefined") {
       builder['trace'] = this.trace;
     }
 
