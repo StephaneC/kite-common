@@ -22,7 +22,7 @@ class CustomAttachment {
   }
 
   isText() {
-    return this.screenshot === undefined;
+    return typeof this.screenshot === "undefined";
   }
 
   getJsonBuilder() {
@@ -35,7 +35,7 @@ class CustomAttachment {
   
   saveToFile(path) {
     let fileName = this.uuid + "-attachment." + this.fileExtention;
-    if (this.isText() && this.text != undefined) {
+    if (this.isText() && typeof this.text !== "undefined") {
       let writeStream = fs.createWriteStream(path + '/' + fileName);
       writeStream.write(this.text);
       writeStream.on('finish', () => {

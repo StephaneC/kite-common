@@ -12,11 +12,6 @@ const getSystemPlatform = function() {
   if (platform.includes('nux')) {
     return 'Linux';
   }
-  if (platform.includes('nix') || platform.includes('aix') 
-    || platform.includes('freebsd') || platform.includes('openbsd')
-    || platform.includes('sunos')) {
-    return 'Unix';
-  }
   return platform;
 }
 

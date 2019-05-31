@@ -19,7 +19,7 @@ class KiteBaseTest {
     this.reporter = new Reporter(this.reportPath);
     
     // fillOutReport();
-    if(payload != undefined) {
+    if(typeof payload !== "undefined") {
       this.payload = payload;
       this.payloadHandling(this.payload);
     }
@@ -34,11 +34,11 @@ class KiteBaseTest {
   }
 
   payloadHandling(payload) {
-    if (payload != undefined) {
+    if (typeof payload !== "undefined") {
       // Todo: Add some info
       this.url = payload.url;
       // Socket server & port
-      if(this.numberOfParticipant > 1 && payload.port != undefined) {
+      if (this.numberOfParticipant > 1 && typeof payload.port !== "undefined") {
         this.port = payload.port;
         let server = 'http://localhost:' + this.port + '/';
         this.io = io(server);
@@ -47,7 +47,7 @@ class KiteBaseTest {
       this.takeScreenshot = payload.takeScreenshotForEachTest;
       // getStats info
       let getStats = payload.getStats;
-      if (getStats != undefined) {
+      if (typeof getStats !== "undefined") {
         this.getStats = getStats.enabled;
         this.statsCollectionTime = getStats.statsCollectionTime;
         this.statsCollectionInterval = getStats.statsCollectionInterval;
@@ -70,7 +70,7 @@ class KiteBaseTest {
   }
 
   async waitAllSteps() {
-    if(this.numberOfParticipant > 1 && this.port != undefined) {
+    if (this.numberOfParticipant > 1 && typeof this.port !== "undefined") {
       try {
         let waiting = true;
         let i = 0

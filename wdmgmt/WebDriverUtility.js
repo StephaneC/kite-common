@@ -3,7 +3,7 @@ const firefox = require('selenium-webdriver/firefox');
 const getFirefoxOptions = function(browser) {
   let firefoxOptions;
   let kiteHome = process.env.KITE_HOME;
-  if (kiteHome != undefined) {
+  if(typeof kiteHome !== "undefined") {
     let path = kiteHome.split("\\").join('/');
     let profile = path + "/third_party/";
     switch(browser.platform.toUpperCase()) {

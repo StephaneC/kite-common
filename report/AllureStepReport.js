@@ -85,7 +85,7 @@ class AllureStepReport extends Entity {
     }
     builder['attachments'] = attArray;
 
-    if (this.details === undefined) {
+    if (typeof this.details === "undefined") {
       builder['statusDetails'] = this.details;
     }
 
