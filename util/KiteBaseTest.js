@@ -19,7 +19,7 @@ class KiteBaseTest {
     this.reporter = new Reporter(this.reportPath);
     
     // fillOutReport();
-    if(typeof payload !== "undefined") {
+    if(payload) {
       this.payload = payload;
       this.payloadHandling(this.payload);
     }
@@ -34,26 +34,24 @@ class KiteBaseTest {
   }
 
   payloadHandling(payload) {
-    if (typeof payload !== "undefined") {
-      // Todo: Add some info
-      this.url = payload.url;
-      // Socket server & port
-      if (this.numberOfParticipant > 1 && typeof payload.port !== "undefined") {
-        this.port = payload.port;
-        let server = 'http://localhost:' + this.port + '/';
-        this.io = io(server);
-      }
-      this.timeout = payload.testTimeout;
-      this.takeScreenshot = payload.takeScreenshotForEachTest;
-      // getStats info
-      let getStats = payload.getStats;
-      if (typeof getStats !== "undefined") {
-        this.getStats = getStats.enabled;
-        this.statsCollectionTime = getStats.statsCollectionTime;
-        this.statsCollectionInterval = getStats.statsCollectionInterval;
-        this.peerConnections = getStats.peerConnections;
-        this.selectedStats = getStats.selectedStats;
-      }
+    // Todo: Add some info
+    this.url = payload.url;
+    // Socket server & port
+    if (this.numberOfParticipant > 1 && payload.port) {
+      this.port = payload.port;
+      let server = 'http://localhost:' + this.port + '/';
+      this.io = io(server);
+    }
+    this.timeout = payload.testTimeout;
+    this.takeScreenshot = payload.takeScreenshotForEachTest;
+    // getStats info
+    let getStats = payload.getStats;
+    if (getStats) {
+      this.getStats = getStats.enabled;
+      this.statsCollectionTime = getStats.statsCollectionTime;
+      this.statsCollectionInterval = getStats.statsCollectionInterval;
+      this.peerConnections = getStats.peerConnections;
+      this.selectedStats = getStats.selectedStats;
     }
   }
 
@@ -70,7 +68,7 @@ class KiteBaseTest {
   }
 
   async waitAllSteps() {
-    if (this.numberOfParticipant > 1 && typeof this.port !== "undefined") {
+    if (this.numberOfParticipant > 1 && this.port) {
       try {
         let waiting = true;
         let i = 0
