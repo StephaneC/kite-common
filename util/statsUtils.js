@@ -40,7 +40,7 @@ function buildSingleStatObject(statArray, selectedStats) {
   let builder = {};
   let stat = {};
   let selectedStatsString = JSON.stringify(selectedStats);
-  if (typeof statArray !== "undefined") {
+  if (statArray != undefined) {
     for(var i = 0; i < statArray.length; i++) {
       if (typeof statArray[i] !== "undefined") {
         var type = statArray[i].type;
