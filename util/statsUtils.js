@@ -1,9 +1,17 @@
-const {RTCCodecStats, RTCMediaStreamStats, RTCRTPStreamStats, RTCPeerConnectionStats, RTCTransportStats, RTCIceCandidatePairStats, RTCIceCandidateStats} = require('../RTCstats');
+const {RTCCodecStats, RTCMediaStreamStats, RTCRTPStreamStats,
+      RTCPeerConnectionStats, RTCTransportStats, RTCIceCandidatePairStats,
+      RTCIceCandidateStats} = require('../RTCstats');
 
 const candidatePairStats = ["bytesSent", "bytesReceived", "currentRoundTripTime", "totalRoundTripTime", "timestamp"];
 const inboundStats = ["bytesReceived", "packetsReceived", "packetsLost", "jitter", "timestamp"];
 const outboundStats = ["bytesSent", "timestamp"];
 
+/**
+ * Creates an object containing all the selected data
+ * @param {JSON} clientStats 
+ * @param {Array} selectedStats Statistics to be kept
+ * @returns {JSON} 
+ */
 function buildClientStatObject(clientStats, selectedStats) {
   let builder = {};
   try {
@@ -36,6 +44,11 @@ function buildClientStatObject(clientStats, selectedStats) {
   }  
 }
 
+/**
+ * Creates a statistic object ~~
+ * @param {Array} statArray 
+ * @param {Array} selectedStats 
+ */
 function buildSingleStatObject(statArray, selectedStats) {
   let builder = {};
   let stat = {};
@@ -104,6 +117,10 @@ function buildSingleStatObject(statArray, selectedStats) {
   return builder;
 }
 
+/**
+ * Gets ~~
+ * @param {JSON} jsonObject 
+ */
 function getSuccessfulCandidate(jsonObject) {
   let candObj = jsonObject['candidate-pair'];
   if(candObj == null) {
@@ -124,6 +141,12 @@ function getSuccessfulCandidate(jsonObject) {
   return null;
 }
 
+/**
+ * Gets RTC statistics
+ * @param {JSON} jsonObject 
+ * @param {Object} stats 
+ * @param {String} mediaType 
+ */
 function getRTCStats(jsonObject, stats, mediaType) {
   let obj = jsonObject[stats];
   if(obj != null) {
@@ -137,6 +160,11 @@ function getRTCStats(jsonObject, stats, mediaType) {
   return null;
 }
 
+/**
+ * Extract data ~~
+ * @param {*} senderStats Sender statistics
+ * @param {*} receiverStats Receiver statistics
+ */
 function extractStats(senderStats, receiverStats) {
   let builder = {};
   if(!(typeof senderStats === "undefined")) {
@@ -151,6 +179,12 @@ function extractStats(senderStats, receiverStats) {
   return builder;
 }
 
+/**
+ * Extracts data by direction
+ * @param {JSON} jsonObj 
+ * @param {String} direction in | out | both
+ * @returns {JSON}
+ */
 function extractJson(jsonObj, direction) {
   let builder = {};
   let jsonArray = jsonObj['statsArray'];
@@ -196,6 +230,12 @@ function extractJson(jsonObj, direction) {
   return csvBuilder;
 }
 
+/**
+ * Gets the name of the JSON object
+ * @param {String} direction 
+ * @param {String} mediaType audio | video
+ * @returns {String} 
+ */
 function getJsonObjectName(direction, mediaType) {
   if("candidate-pair" === mediaType) {
     return "candidate-pair_";
@@ -203,6 +243,10 @@ function getJsonObjectName(direction, mediaType) {
   return direction + "bound-" + mediaType + "_";
 }
 
+/**
+ * Gets the key of the JSON object
+ * @param {String} direction 
+ */
 function getJsonKey(direction) {
   if("Sent" === direction || "out" === direction) {
     return "bytesSent";
@@ -213,6 +257,12 @@ function getJsonKey(direction) {
   return null;
 }
 
+/**
+ * Computes the round trip time
+ * @param {JSON} jsonObject 
+ * @param {Object} noStats 
+ * @param {String} prefix current | total
+ */
 function computeRoundTripTime(jsonObject, noStats, prefix) {
   let rtt = 0;
   let ct = 0;

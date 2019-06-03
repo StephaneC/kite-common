@@ -1,5 +1,5 @@
 /**
- * Enum: status of the step
+ * @enum Status of the step
  */
 const Status = {
   FAILED: "failed",

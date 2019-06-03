@@ -17,7 +17,7 @@ const getSumFunctionScript = 'function getSum(total, num) {return total + num;};
 /**
  * Gets the script to get the sum of the pixels of a video with its id
  * @param {Number} id Video id
- * @return {String} The script to get the sum of the pixels of a video
+ * @returns {String} The script to get the sum of the pixels of a video
  */
 const getPixelSumsByIdScript = function(id) {
   return getSumFunctionScript + 'const canvas = document.createElement(\'canvas\');' 
@@ -35,7 +35,7 @@ const getPixelSumsByIdScript = function(id) {
 /**
  * Gest the script to get the sum of the pixels of a video with its index
  * @param {Number} index Video index
- * @return {String} The script to get the sum of the pixels of a video
+ * @returns {String} The script to get the sum of the pixels of a video
  */
 const getPixelSumByIndexScript = function(index) {
   return "function getSum(total, num) {    return total + num;};"
@@ -52,7 +52,7 @@ const getPixelSumByIndexScript = function(index) {
 /**
  * Gets the script to get the statistics 
  * @param {statsType} statsType Type of statistics
- * @return {String} The script to get the statistics
+ * @returns {String} The script to get the statistics
  */
 const getStashedStat = function(statsType) {
   let jsQuery = "";
@@ -80,7 +80,7 @@ const getStashedStat = function(statsType) {
  * Gets the script for getStats() according to the type of statistics
  * @param {String} statsType Type of statistics
  * @param {String} pc The peer connection 
- * @return {String} The script to get the statistics
+ * @returns {String} The script to get the statistics
  */
 const stashStat = function(statsType, pc) {
   let jsQuery = "";
@@ -200,7 +200,7 @@ const stashStat = function(statsType, pc) {
  * @param {Object} driver 
  * @param {String} peerConnection The peer connection 
  * @param {String} type Type of sdp message
- * @return {Object} The sdp object
+ * @returns {Object} The sdp object
  */
 const getSDPMessage = async function(driver, peerConnection, type) {
   const sdpObj = await driver.executeScript(sdpMessageScript(peerConnection, type));
@@ -212,7 +212,7 @@ const getSDPMessage = async function(driver, peerConnection, type) {
  * Returns the script corresponding to the message type
  * @param {String} peerConnection The peer connection 
  * @param {String} type Type of sdp message
- * @return {String} The sdp message script
+ * @returns {String} The sdp message script
  */
 const sdpMessageScript = function(peerConnection, type) {
   switch (type) {
@@ -253,7 +253,7 @@ const waitForElementsWithId = async function(driver, id) {
  * Waits for elements with a class name
  * @param {Object} driver 
  * @param {String} className Class name of the elements to be waited for
- * @return {Boolean}  
+ * @returns {Boolean}  
  */
 const waitForElementsWithClassName = async function(driver, className) {
   const videoElements = await driver.findElements(By.className(className));
@@ -263,7 +263,7 @@ const waitForElementsWithClassName = async function(driver, className) {
 /**
  * Waits a while
  * @param {Number} ms Time in ms
- * @return {Promise} Returns a resolved promise after a given time
+ * @returns {Promise} Returns a resolved promise after a given time
  */
 const	waitAround = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -272,7 +272,7 @@ const	waitAround = function (ms) {
 /**
  * Checks if the state the document is "complete"
  * @param {Object} driver 
- * @return {Boolean} 
+ * @returns {Boolean} 
  */
 const isDocumentReady = async function(driver) {
   const s = await driver.executeScript("return document.readyState");
@@ -310,7 +310,7 @@ module.exports = {
   /**
    * Retrieves arguments and information useful for tests
    * @param {Object} process Provides information about the current Node.js process
-   * @return {Object} A collection of named values containing information for testing
+   * @returns {Object} A collection of named values containing information for testing
    */
   getGlobalVariables: function(process){
     const numberOfParticipant = process.argv[2];
@@ -373,7 +373,7 @@ module.exports = {
    * @param {Object} driver 
    * @param {String} statsType Type of statistics
    * @param {String} pc The peer connection 
-   * @return An array of statistics
+   * @returns An array of statistics
    */
   getStatOnce: async function(driver, statsType, pc) {
     await driver.executeScript(stashStat(statsType, pc));
@@ -387,7 +387,7 @@ module.exports = {
    * @param {Object} stepInfo Reference to the Step object
    * @param {String} statsType Type of statistics
    * @param {String} pc The peer connection
-   * @return A collection of named values 
+   * @returns A collection of named values 
    */
   getStats: async function(stepInfo, statsType, pc) {
     let stats = {};
@@ -413,7 +413,7 @@ module.exports = {
    * Checks the video with an given index
    * @param {Object} driver 
    * @param {Number} index Video index to be checked
-   * @return A collection of named values
+   * @returns A collection of named values
    */
   verifyVideoDisplayByIndex: async function(driver, index) {
     const sumArray = [];
@@ -444,7 +444,7 @@ module.exports = {
    * Checks the video with an given id
    * @param {Object} driver 
    * @param {Number} id Video id to be checked
-   * @return A collection of named values
+   * @returns A collection of named values
    */
   verifyVideoDisplayById: async function(driver, id) {
     const sumArray = [];
@@ -474,7 +474,7 @@ module.exports = {
   /**
    * Takes a screenshot of the current page and return it
    * @param {WebDriver} driver
-   * @return {Object} A base-64 encoded PNG 
+   * @returns {Object} A base-64 encoded PNG 
    */
   takeScreenshot: async function(driver) {
     const image = await driver.takeScreenshot();

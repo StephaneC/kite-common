@@ -1,5 +1,5 @@
 /**
- * Enum: status of the stage
+ * @enum Status of the stage
  */
 const Stage = {
   SCHEDULED: 'scheduled',

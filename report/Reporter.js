@@ -2,14 +2,12 @@ const CustomAttachment = require('./CustomAttachment');
 const {TestUtils} = require('kite-common');
 
 /**
- * Class: Reporter
- * Description: Adds attachments to reports
+ * @class Reporter
+ * @description Adds attachments to reports
+ * @constructor Reporter(reportPath)
+ * @param {String} reportPath Path of the report
  */
 class Reporter {
-  /**
-   * Constructor of the Reporter class
-   * @param {String} reportPath Path of the report
-   */
   constructor(reportPath) {
     this.reportPath = reportPath; 
     this.containers = []; 

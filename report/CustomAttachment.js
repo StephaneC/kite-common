@@ -2,16 +2,14 @@ const fs = require('fs');
 const generateUUID = require('./generate-uuid');
 
 /**
- * Class: CustomAttachment
- * Description: Create a custom attachment
+ * @class CustomAttachment
+ * @description Create a custom attachment
+ * @constructor CustomAttachment(name,type, fileExtension)
+ * @param {*} name CustomAttachment name
+ * @param {*} type CustomAttachment type
+ * @param {*} fileExtension CustomAttachment extension
  */
 class CustomAttachment {
-  /**
-   * Constructor of the CustomAttachment class
-   * @param {*} name CustomAttachment name
-   * @param {*} type CustomAttachment type
-   * @param {*} fileExtension Extension of the attachment
-   */
   constructor(name, type, fileExtension) {
     this.name = name;
     this.type = type;
@@ -37,7 +35,7 @@ class CustomAttachment {
 
   /**
    * Checks if it's a text or not
-   * @return {Boolean}
+   * @returns {Boolean}
    */
   isText() {
     return typeof this.screenshot === "undefined";
@@ -45,7 +43,7 @@ class CustomAttachment {
 
   /**
    * Returns the json object corresponding to the attachment
-   * @return {JSON}
+   * @returns {JSON}
    */
   getJsonBuilder() {
     let builder = {};

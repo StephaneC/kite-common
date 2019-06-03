@@ -1,7 +1,9 @@
 /**
- * Class: KiteTestError
- * Extends: Error
- * Description: Create an error with a status: failed|broken|passed|skipped
+ * @class KiteTestError
+ * @extends Error
+ * @description Create an error with a status: failed | broken
+ * @constructor KiteTestError(status, ...params)
+ * @param {String} status Test status at the time of the error: failed | broken
  */
 class KiteTestError extends Error{
   constructor(status, ...params) {

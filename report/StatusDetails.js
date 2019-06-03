@@ -1,7 +1,8 @@
 // ATM: Useless
 /**
- * Class: StatusDetail
- * Description:
+ * @class StatusDetail
+ * @description
+ * @constructor StatusDetails()
  */
 class StatusDetails {
   constructor() {

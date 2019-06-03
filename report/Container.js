@@ -3,15 +3,13 @@
 const Entity = require('./Entity');
 
 /**
- * Class: Container
- * Extends: Entity
- * Description: Create a container
+ * @class Container
+ * @extends Entity
+ * @description  Create a container
+ * @constructor Container(name)
+ * @param {String} name Container name
  */
 class Container extends Entity {
-  /** 
-   * Constructor of the Container class
-   * @param {String} name Container name
-   */
   constructor(name) {
     super(name);
     this.childrenId = [];
@@ -46,7 +44,7 @@ class Container extends Entity {
 
   /**
    * Returns the json object corresponding to the container
-   * @return {JSON}
+   * @returns {JSON}
    */
   getJsonBuilder() {
     let builder = super.getJsonBuilder();

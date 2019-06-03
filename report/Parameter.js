@@ -1,13 +1,11 @@
 /**
- * Class: Parameter
- * Description: Creates a parameter with a name and a value
+ * @class Parameter
+ * @description Creates a parameter with a name and a value
+ * @constructor Parameter(name, value)
+ * @param {String} name Parameter name
+ * @param {Object} value Parameter value
  */
 class Parameter {
-  /**
-   * Constructor of the parameter class
-   * @param {String} name Parameter name
-   * @param {Object} value Parameter value
-   */
   constructor(name, value) {
     this.name = name;
     this.value = value;
@@ -15,7 +13,7 @@ class Parameter {
 
   /**
    * Returns a string containing the entire contexte
-   * @return {String}
+   * @returns {String}
    */
   toJson() {
     return JSON.stringify(this);

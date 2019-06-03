@@ -3,15 +3,13 @@ const Status = require('./Status');
 const Parameter = require('./Parameter');
 
 /**
- * Class: AllureStepReport
- * Extends: Entity
- * Description: Create a step report to generate the allure report
+ * @class AllureStepReport
+ * @extends Entity
+ * @description Create a step report to generate the allure report
+ * @constructor AllureStepReport(name)
+ * @param {String} name Name / Description of the step
  */
 class AllureStepReport extends Entity {
-  /**
-   * Constructor of the AllureStepReport class
-   * @param {String} name Name / Description of the step 
-   */
   constructor(name) {
     super(name);
     this.parameters = [];
@@ -82,7 +80,7 @@ class AllureStepReport extends Entity {
 
   /**
    * Returns the value of the ignore variable
-   * @return {Boolean} 
+   * @returns {Boolean} 
    */
   canBeIgnore() {
     return this.ignore;
@@ -112,7 +110,7 @@ class AllureStepReport extends Entity {
 
   /**
    * Returns the json object corresponding to the report
-   * @return {JSON} 
+   * @returns {JSON} 
    */
   getJsonBuilder() {
     this.status = this.getActualStatus();
