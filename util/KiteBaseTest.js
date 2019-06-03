@@ -37,8 +37,8 @@ class KiteBaseTest {
     // Todo: Add some info
     this.url = payload.url;
     // Socket server & port
-    if (this.numberOfParticipant > 1 && payload.port) {
-      this.port = payload.port;
+    if (this.numberOfParticipant > 1) {
+      this.port = payload.port ? payload.port : 30000;
       let server = 'http://localhost:' + this.port + '/';
       this.io = io(server);
     }

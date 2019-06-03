@@ -5,9 +5,14 @@ const generateUUID = require('./generate-uuid');
 /**
  * Class: AllureTestReport
  * Extends: AllureStepReport
- * Description:
+ * Description: Create a step report to generate the allure report
  */
 class AllureTestReport extends AllureStepReport {
+  /**
+   * Constructor of the AllureTestReport class
+   * @param {String} name Name / Description of the test
+   * @param {String} uuid UUID of the test report
+   */
   constructor(name, uuid) {
     super(name);
     this.labels = [];
@@ -16,6 +21,10 @@ class AllureTestReport extends AllureStepReport {
     this.historyId = generateUUID();
   }
 
+  /**
+   * Extracts a report
+   * @param {Object} otherReport 
+   */
   extract(otherReport) {
     this.labels = otherReport.labels;
     this.links = [];
@@ -23,18 +32,35 @@ class AllureTestReport extends AllureStepReport {
     this.historyId = generateUUID();
   }
 
+  /**
+   * Sets the full name
+   * @param {String} fullName 
+   */
   setFullName(fullName) {
     this.fullName = fullName;
   }
 
+  /**
+   * Adds a label
+   * @param {String} name Label name
+   * @param {Object} value Label value
+   */
   addLabel(name, value) {
     this.labels.push(new Parameter(name, value));
   }
 
+  /**
+   * Adds a link
+   * @param {Object} link Link to be added
+   */
   addLink(link) {
     this.links.push(link);
   }
 
+  /**
+   * Returns the json object corresponding to the report
+   * @return {JSON}
+   */
   getJsonBuilder() {
     let temp = super.getJsonBuilder();
     let builder = {};
