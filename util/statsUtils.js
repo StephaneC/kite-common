@@ -260,7 +260,7 @@ function getJsonKey(direction) {
 /**
  * Computes the round trip time
  * @param {JSON} jsonObject 
- * @param {Object} noStats 
+ * @param {Number} noStats 
  * @param {String} prefix current | total
  */
 function computeRoundTripTime(jsonObject, noStats, prefix) {
@@ -283,6 +283,13 @@ function computeRoundTripTime(jsonObject, noStats, prefix) {
   return "";
 }
 
+/**
+ * Gets the total number of bytes in a direction 
+ * @param {JSON} jsonObject 
+ * @param {Number} noStats 
+ * @param {String} direction 
+ * @returns {String}
+ */
 function totalBytes(jsonObject, noStats, direction) {
   let bytes = 0;
   try {
@@ -299,6 +306,14 @@ function totalBytes(jsonObject, noStats, direction) {
   return "" + bytes;
 }
 
+/**
+ * Computes the bit rate
+ * @param {JSON} jsonObject 
+ * @param {Number} noStats 
+ * @param {String} direction 
+ * @param {String} mediaType 
+ * @returns {String}
+ */
 function computeBitrate(jsonObject, noStats, direction, mediaType) {
   let bytesStart = 0;
   let bytesEnd = 0;
@@ -349,6 +364,12 @@ function computeBitrate(jsonObject, noStats, direction, mediaType) {
   return "";
 }
 
+/**
+ * Computes the audio jitter
+ * @param {JSON} jsonObject 
+ * @param {Number} noStats 
+ * @returns {String}
+ */
 function computeAudioJitter(jsonObject, noStats) {
   let jitter = 0;
   let ct = 0;
@@ -377,6 +398,13 @@ function computeAudioJitter(jsonObject, noStats) {
   return "";
 }
 
+/**
+ * Computes packets loss
+ * @param {JSON} jsonObject 
+ * @param {Number} noStats 
+ * @param {String} mediaType 
+ * @param {String}
+ */
 function computePacketsLoss(jsonObject, noStats, mediaType) {
   if (noStats < 1) {
     console.log("Error: less than 2 stats");
@@ -408,6 +436,14 @@ function computePacketsLoss(jsonObject, noStats, mediaType) {
   return "";
 }
 
+/**
+ * Gets statistics in json format
+ * @param {JSON} jsonObject 
+ * @param {Array} stringArray 
+ * @param {Object} stats 
+ * @param {String} mediaType
+ * @returns {JSON} 
+ */
 function getStatsJsonBuilder(jsonObject, stringArray, stats, mediaType) {
   let subBuilder = {};
   if("candidate-pair" === stats) {

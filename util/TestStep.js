@@ -20,7 +20,7 @@ class TestStep {
   }
 
   /**
-   * 
+   * Executes the step and manages the report
    * @param {*} KiteBaseTest 
    */
   async execute(KiteBaseTest) {
@@ -47,26 +47,34 @@ class TestStep {
     }
   }
 
-  // Indicates that the step has been skipped
+  /**
+   * Indicates that the step has been skipped and set the report status at SKIPPED
+   */
   skip() {
     console.log('Skipping step: ' + this.stepDescription());
     this.report.setStatus(Status.SKIPPED);
   }
-  
-  // Initializes the description and the step report
+
+  /**
+   * Initializes the description and the step report
+   */
   init() {
     let description = this.stepDescription()
     this.report = new AllureStepReport(description);
     this.report.setDescription(description);
   }
 
-  // Updates the end date of the report
+  /**
+   * Updates the end date of the report 
+   */
   finish() {
     this.report.setStopTimestamp();
   }
   
-  // Abstract function that must be implemented
-  // Contains all the actions of a step
+  /**
+   * Contains all the actions of a step
+   * @abstract function that must be implemented
+   */
   async step() {
     throw new Error('You must implement this function');
   }
