@@ -14,6 +14,11 @@ const extractJson = function(senderStats, direction) {
 
 const getSumFunctionScript = 'function getSum(total, num) {return total + num;};';
 
+/**
+ * Gets the script to get the sum of the pixels of a video with its id
+ * @param {Number} id Video id
+ * @returns {String} The script to get the sum of the pixels of a video
+ */
 const getPixelSumsByIdScript = function(id) {
   return getSumFunctionScript + 'const canvas = document.createElement(\'canvas\');' 
   + "const id = document.getElementById('" + id + "');"
@@ -27,6 +32,11 @@ const getPixelSumsByIdScript = function(id) {
   + 'return sum;';
 }
 
+/**
+ * Gest the script to get the sum of the pixels of a video with its index
+ * @param {Number} index Video index
+ * @returns {String} The script to get the sum of the pixels of a video
+ */
 const getPixelSumByIndexScript = function(index) {
   return "function getSum(total, num) {    return total + num;};"
   + "var canvas = document.createElement('canvas');"
@@ -39,7 +49,11 @@ const getPixelSumByIndexScript = function(index) {
   + "return sum;} else {return 0 }";
 }
 
-
+/**
+ * Gets the script to get the statistics 
+ * @param {statsType} statsType Type of statistics
+ * @returns {String} The script to get the statistics
+ */
 const getStashedStat = function(statsType) {
   let jsQuery = "";
   switch (statsType) {
@@ -62,6 +76,12 @@ const getStashedStat = function(statsType) {
   return jsQuery;
 }
 
+/**
+ * Gets the script for getStats() according to the type of statistics
+ * @param {String} statsType Type of statistics
+ * @param {String} pc The peer connection 
+ * @returns {String} The script to get the statistics
+ */
 const stashStat = function(statsType, pc) {
   let jsQuery = "";
   switch (statsType) {
@@ -175,12 +195,25 @@ const stashStat = function(statsType, pc) {
   return jsQuery;
 }
 
+/**
+ * Gets the sdp message
+ * @param {Object} driver 
+ * @param {String} peerConnection The peer connection 
+ * @param {String} type Type of sdp message
+ * @returns {Object} The sdp object
+ */
 const getSDPMessage = async function(driver, peerConnection, type) {
   const sdpObj = await driver.executeScript(sdpMessageScript(peerConnection, type));
   await waitAround(1000);
   return sdpObj;
 }
 
+/**
+ * Returns the script corresponding to the message type
+ * @param {String} peerConnection The peer connection 
+ * @param {String} type Type of sdp message
+ * @returns {String} The sdp message script
+ */
 const sdpMessageScript = function(peerConnection, type) {
   switch (type) {
     case 'offer':
@@ -196,32 +229,62 @@ const sdpMessageScript = function(peerConnection, type) {
   }
 }
 
+/**
+ * Waits for elements with a tag name
+ * @param {Object} driver 
+ * @param {String} tagName Tag name of the elements to be waited for
+ */
 const waitForElementsWithTagName = async function(driver, tagName) {
   const videoElements = await driver.findElements(By.tagName(tagName));
   return videoElements.length > 0;
 };
 
+/**
+ * Waits for elements with an id
+ * @param {Object} driver 
+ * @param {Number} id Id of the elements to be waited for
+ */
 const waitForElementsWithId = async function(driver, id) {
   const videoElements = await driver.findElements(By.id(id));
   return videoElements.length > 0;
 };
 
+/**
+ * Waits for elements with a class name
+ * @param {Object} driver 
+ * @param {String} className Class name of the elements to be waited for
+ * @returns {Boolean}  
+ */
 const waitForElementsWithClassName = async function(driver, className) {
   const videoElements = await driver.findElements(By.className(className));
   return videoElements.length > 0;
 };
 
-
+/**
+ * Waits a while
+ * @param {Number} ms Time in ms
+ * @returns {Promise} Returns a resolved promise after a given time
+ */
 const	waitAround = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/**
+ * Checks if the state the document is "complete"
+ * @param {Object} driver 
+ * @returns {Boolean} 
+ */
 const isDocumentReady = async function(driver) {
   const s = await driver.executeScript("return document.readyState");
   return s === "complete";
 }
 
 // todo: doc
+/**
+ * Writes the desired content in a file
+ * @param {String} fileName The file in which to write
+ * @param {String} content The content to write
+ */
 const writeToFile = function (fileName, content) {
   let writeStream = fs.createWriteStream(fileName);
 
@@ -244,6 +307,11 @@ module.exports = {
 
   writeToFile,
 
+  /**
+   * Retrieves arguments and information useful for tests
+   * @param {Object} process Provides information about the current Node.js process
+   * @returns {Object} A collection of named values containing information for testing
+   */
   getGlobalVariables: function(process){
     const numberOfParticipant = process.argv[2];
     const id = process.argv[3]; // To identify browsers
@@ -268,10 +336,22 @@ module.exports = {
     return variables; 
   },
 
+  /**
+   * Waits for page to be ready 
+   * @param {WebDriver} driver 
+   * @param {Number} timeout Time in s before it timeout 
+   */
   waitForPage: async function(driver, timeout) {
     await driver.wait(isDocumentReady(driver), timeout * 1000);
   },
 
+  /**
+   * Waits for element in the current page
+   * @param {Object} driver 
+   * @param {String} type The type of element 
+   * @param {String} value The element value
+   * @param {Number} timeout Time in s before it timeout  
+   */
   waitForElement: async function(driver, type, value, timeout) {
     switch(type) {
       case 'id': {
@@ -288,6 +368,13 @@ module.exports = {
     }
   },
 
+  /**
+   * Gets the statistics once
+   * @param {Object} driver 
+   * @param {String} statsType Type of statistics
+   * @param {String} pc The peer connection 
+   * @returns An array of statistics
+   */
   getStatOnce: async function(driver, statsType, pc) {
     await driver.executeScript(stashStat(statsType, pc));
     await waitAround(100);
@@ -295,7 +382,13 @@ module.exports = {
     return stat;
   },
   
-  // todo: doc
+  /**
+   * Gets the statistics several times
+   * @param {Object} stepInfo Reference to the Step object
+   * @param {String} statsType Type of statistics
+   * @param {String} pc The peer connection
+   * @returns A collection of named values 
+   */
   getStats: async function(stepInfo, statsType, pc) {
     let stats = {};
     for (let i = 0; i < stepInfo.statsCollectionTime; i += stepInfo.statsCollectionInterval) {
@@ -316,7 +409,12 @@ module.exports = {
   extractStats,
   extractJson,
 
-  // todo: doc
+  /**
+   * Checks the video with an given index
+   * @param {Object} driver 
+   * @param {Number} index Video index to be checked
+   * @returns A collection of named values
+   */
   verifyVideoDisplayByIndex: async function(driver, index) {
     const sumArray = [];
     let result = {};
@@ -342,7 +440,12 @@ module.exports = {
     return result;
   },
 
-  // Todo: doc
+    /**
+   * Checks the video with an given id
+   * @param {Object} driver 
+   * @param {Number} id Video id to be checked
+   * @returns A collection of named values
+   */
   verifyVideoDisplayById: async function(driver, id) {
     const sumArray = [];
     let result = {};
@@ -368,16 +471,30 @@ module.exports = {
     return result;
   },
 
+  /**
+   * Takes a screenshot of the current page and return it
+   * @param {WebDriver} driver
+   * @returns {Object} A base-64 encoded PNG 
+   */
   takeScreenshot: async function(driver) {
     const image = await driver.takeScreenshot();
     return image;
   },
 
+  /**
+   * Navigates to the url and wait for the page to be ready
+   * @param {Object} stepInfo Reference to the Step object
+   */
   open: async function(stepInfo) {
     await stepInfo.driver.get(stepInfo.url);
     await this.waitForPage(stepInfo.driver, stepInfo.timeout); 
   },
 
+  /**
+   * Waits for the video elements of the page 
+   * @param {Object} stepInfo Reference to the Step object
+   * @param {String} videoElements 
+   */
   waitVideos: async function(stepInfo, videoElements) {
     let videos = [];
     let i = 0;

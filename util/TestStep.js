@@ -1,20 +1,28 @@
 const {AllureStepReport, KiteTestError, Status} = require('../report');
 
 /**
- * Class: TestStep
- * Description: allows to manage the different steps and reports
+ * @class TestStep
+ * @description Allows to manage the different steps and reports
+ * @constructor TestStep()
  */
 class TestStep {
   constructor() { 
     this.init();
   }
 
-  // Abstract function that must be implemented
-  // Return (String) the step decription;
+  /**
+   * Returns the step description
+   * @abstract function that must be implemented
+   * @returns {String} The description
+   */
   stepDescription() {
     throw new Error('You must implement this function');
   }
 
+  /**
+   * Executes the step and manages the report
+   * @param {*} KiteBaseTest 
+   */
   async execute(KiteBaseTest) {
     try {
       if(KiteBaseTest.report.status == Status.PASSED) {
@@ -39,26 +47,34 @@ class TestStep {
     }
   }
 
-  // Indicates that the step has been skipped
+  /**
+   * Indicates that the step has been skipped and set the report status at SKIPPED
+   */
   skip() {
     console.log('Skipping step: ' + this.stepDescription());
     this.report.setStatus(Status.SKIPPED);
   }
-  
-  // Initializes the description and the step report
+
+  /**
+   * Initializes the description and the step report
+   */
   init() {
     let description = this.stepDescription()
     this.report = new AllureStepReport(description);
     this.report.setDescription(description);
   }
 
-  // Updates the end date of the report
+  /**
+   * Updates the end date of the report 
+   */
   finish() {
     this.report.setStopTimestamp();
   }
   
-  // Abstract function that must be implemented
-  // Contains all the actions of a step
+  /**
+   * Contains all the actions of a step
+   * @abstract function that must be implemented
+   */
   async step() {
     throw new Error('You must implement this function');
   }

@@ -2,6 +2,15 @@ const {AllureTestReport, Reporter} = require('../report');
 const TestUtils = require('./TestUtils');
 const io = require('socket.io-client');
 
+/**
+ * @class KitBaseTest
+ * @description Creating the basis for a KITE test
+ * @constructor KiteBaseTest(name, globalVariables, capabilities, payload)
+ * @param {String} name
+ * @param {JSON} globalVariables
+ * @param {JSON} capabilities
+ * @param {JSON} payload
+ */
 class KiteBaseTest {
   constructor(name, globalVariables, capabilities, payload) {
     // Allure test report
@@ -25,20 +34,32 @@ class KiteBaseTest {
     }
   }
 
+  /**
+   * Sets the test report
+   * @param {AllureTestReport} report 
+   */
   setTestReport(report) {
     this.report = report;
   }
   
+  /**
+   * Runs the test steps
+   * @abstract function that must be implemented
+   */
   async testScript() {
     throw new Error('You must implement this function');
   }
 
+  /**
+   * Gets the information from the payload
+   * @param {JSON} payload 
+   */
   payloadHandling(payload) {
     // Todo: Add some info
     this.url = payload.url;
     // Socket server & port
-    if (this.numberOfParticipant > 1 && payload.port) {
-      this.port = payload.port;
+    if (this.numberOfParticipant > 1) {
+      this.port = payload.port ? payload.port : 30000;
       let server = 'http://localhost:' + this.port + '/';
       this.io = io(server);
     }
@@ -55,10 +76,17 @@ class KiteBaseTest {
     }
   }
 
+  /**
+   * Sets the description of the test report
+   * @param {String} description 
+   */
   setDescription(description) {
     this.report.setDescription(description);
   }
 
+  /**
+   * Runs the entire test
+   */
   async run() {
     await this.testScript();
     this.report.setStopTimestamp();
@@ -67,6 +95,9 @@ class KiteBaseTest {
     TestUtils.writeToFile(this.reportPath + '/result.json', JSON.stringify(value));
   }
 
+  /**
+   * Synchronizes browsers of the same test
+   */
   async waitAllSteps() {
     if (this.numberOfParticipant > 1 && this.port) {
       try {

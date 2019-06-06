@@ -10,4 +10,7 @@ exports.TestUtils = require('./util/TestUtils');
 exports.WebDriverFactory = require('./wdmgmt/WebDriverFactory');
 exports.WebDriverUtility = require('./wdmgmt/WebDriverUtility');
 
+// Steps
+exports.ScreenshotStep = require('./steps/ScreenshotStep');
+
 

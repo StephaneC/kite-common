@@ -2,8 +2,10 @@ const Stage = require('./Stage');
 const generateUUID = require('./generate-uuid');
 
 /**
- * Class: Entity
- * Description:
+ * @class Entity
+ * @description Creates an entity
+ * @constructor Entity(name)
+ * @param {String} name Entity name
  */
 class Entity {
   constructor(name) {
@@ -13,25 +15,42 @@ class Entity {
     this.uuid = generateUUID();
   }
 
+  /**
+   * Sets the start timestamp and sets "stage" to RUNNING
+   */
   setStartTimestamp() {
     this.start = Date.now();
     this.stage = Stage.RUNNING;
   }
   
+  /**
+   * Sets the start timestamp and sets "stage" to FINISHED
+   */
   setStopTimestamp() {
     this.stop = Date.now();
     this.stage = Stage.FINISHED;
   }
 
+  /**
+   * Gets the uuid
+   * @returns {String}
+   */
   getUuid() { 
     return this.uuid;
   }
 
+  /**
+   * Gets the name
+   * @returns {String}
+   */
   getName() {
     return this.name 
   }
 
-  
+  /**
+   * Returns the json object corresponding to the entity
+   * @returns {JSON}
+   */
   getJsonBuilder() {
     var builder = {};
     builder['name'] = this.name;
@@ -40,6 +59,10 @@ class Entity {
     return builder;
   }
   
+  /**
+   * Returns a string containing the entire contexte
+   * @returns {String}
+   */
   toJson() {
     return JSON.stringify(this); 
   }

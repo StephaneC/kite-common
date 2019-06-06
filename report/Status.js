@@ -1,3 +1,6 @@
+/**
+ * @enum Status of the step
+ */
 const Status = {
   FAILED: "failed",
   BROKEN: "broken",

@@ -1,5 +1,10 @@
 const firefox = require('selenium-webdriver/firefox');
 
+/**
+ * Gets firefox options to perform tests
+ * @param {Object} browser 
+ * @returns {Object} Firefox options
+ */
 const getFirefoxOptions = function(browser) {
   let firefoxOptions;
   let kiteHome = process.env.KITE_HOME;
@@ -29,6 +34,11 @@ const getFirefoxOptions = function(browser) {
 }
 
 module.exports = {
+  /**
+   * Gets options according to the browser
+   * @param {Object} browser 
+   * @returns {Object} Browser options
+   */
   getOptions: function(browser) {
     switch(browser.browserName) {
       case 'chrome': {

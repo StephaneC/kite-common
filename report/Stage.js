@@ -1,3 +1,6 @@
+/**
+ * @enum Status of the stage
+ */
 const Stage = {
   SCHEDULED: 'scheduled',
   RUNNING: 'running',
