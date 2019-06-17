@@ -16,6 +16,14 @@ class Entity {
   }
 
   /**
+   * Sets the name
+   * @param {String} name Name of the step 
+   */
+  setName(name) {
+    this.name = name;
+  }
+
+  /**
    * Sets the start timestamp and sets "stage" to RUNNING
    */
   setStartTimestamp() {
@@ -44,7 +52,7 @@ class Entity {
    * @returns {String}
    */
   getName() {
-    return this.name 
+    return this.name;
   }
 
   /**

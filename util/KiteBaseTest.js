@@ -1,4 +1,5 @@
 const {AllureTestReport, Reporter} = require('../report');
+const Scenario = require('../instrumentation/Scenario');
 const TestUtils = require('./TestUtils');
 const io = require('socket.io-client');
 
@@ -10,24 +11,26 @@ const io = require('socket.io-client');
  * @param {JSON} globalVariables
  * @param {JSON} capabilities
  * @param {JSON} payload
+ * @param {JSON} networkInstrumentation (Optional) 
  */
 class KiteBaseTest {
-  constructor(name, globalVariables, capabilities, payload) {
+  constructor(name, kiteConfig) {
     // Allure test report
     this.name = name;
-    this.numberOfParticipant = globalVariables.numberOfParticipant;
-    this.id = globalVariables.id;
-    this.uuid = globalVariables.uuid.split('-').join('');
-    this.reportPath = globalVariables.reportPath;
-    this.capabilities = capabilities;
-    
+    this.numberOfParticipant = kiteConfig.numberOfParticipant;
+    this.id = kiteConfig.id;
+    this.uuid = kiteConfig.uuid.split('-').join('');
+    this.reportPath = kiteConfig.reportPath;
+    this.capabilities = kiteConfig.capabilities;
+    this.remoteUrl = kiteConfig.remoteUrl;
     // default timeout
     this.timeout = 60;
-
     this.report = new AllureTestReport(this.name);
     this.reporter = new Reporter(this.reportPath);
-    
-    // fillOutReport();
+
+    // Optional
+    this.networkInstrumentation = kiteConfig.networkInstrumentation;
+    let payload = kiteConfig.payload;
     if(payload) {
       this.payload = payload;
       this.payloadHandling(this.payload);
@@ -74,6 +77,13 @@ class KiteBaseTest {
       this.peerConnections = getStats.peerConnections;
       this.selectedStats = getStats.selectedStats;
     }
+    let scenarios = payload.scenarios;
+    if (scenarios && this.networkInstrumentation) {
+      this.scenarios = [];
+      for(let i = 0; i < scenarios.length; i++) {
+        this.scenarios.push(new Scenario(scenarios[i], this.networkInstrumentation));
+      }
+    }
   }
 
   /**
@@ -88,11 +98,17 @@ class KiteBaseTest {
    * Runs the entire test
    */
   async run() {
-    await this.testScript();
-    this.report.setStopTimestamp();
-    this.reporter.generateReportFiles();
-    let value = this.report.getJsonBuilder();
-    TestUtils.writeToFile(this.reportPath + '/result.json', JSON.stringify(value));
+    try {
+      await this.testScript();
+      this.report.setStopTimestamp();
+      this.reporter.generateReportFiles();
+      let value = this.report.getJsonBuilder();
+      TestUtils.writeToFile(this.reportPath + '/result.json', JSON.stringify(value));
+    } catch (e) {
+      console.log(e);
+    } finally {
+      this.io.close();
+    }
   }
 
   /**
@@ -114,10 +130,9 @@ class KiteBaseTest {
           await TestUtils.waitAround(1000); // waiting 1 sec
         }
         this.io.emit("done", this.id);
+        await TestUtils.waitAround(2000);
       } catch (e) {
         console.log(e);
-      } finally {
-        this.io.close();
       }
     }
   }

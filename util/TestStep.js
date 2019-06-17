@@ -59,7 +59,7 @@ class TestStep {
    * Initializes the description and the step report
    */
   init() {
-    let description = this.stepDescription()
+    let description = this.stepDescription();
     this.report = new AllureStepReport(description);
     this.report.setDescription(description);
   }

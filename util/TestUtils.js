@@ -1,19 +1,56 @@
 const fs = require('fs');
-const {Builder, By, Key, until, promise} = require('selenium-webdriver');
+const {By} = require('selenium-webdriver');
 const statsUtils = require('./statsUtils');
 const {KiteTestError, Status} = require('../report');
+const fetch = require('node-fetch');
+const NetworkInstrumentation = require('../instrumentation/NetworkInstrumentation');
 
-const extractStats = function(senderStats, receiverStats) {
-  return statsUtils.extractStats(senderStats, receiverStats);
+/**
+ * Checks if the state the document is "complete"
+ * @param {Object} driver 
+ * @returns {Boolean} 
+ */
+const isDocumentReady = async function(driver) {
+  const s = await driver.executeScript("return document.readyState");
+  return s === "complete";
 }
 
-const extractJson = function(senderStats, direction) {
-  return statsUtils.extractJson(senderStats, direction);
+// SDP Message
+/**
+ * Gets the sdp message
+ * @param {Object} driver 
+ * @param {String} peerConnection The peer connection 
+ * @param {String} type Type of sdp message
+ * @returns {Object} The sdp object
+ */
+const getSDPMessage = async function(driver, peerConnection, type) {
+  const sdpObj = await driver.executeScript(sdpMessageScript(peerConnection, type));
+  await waitAround(1000);
+  return sdpObj;
 }
 
+/**
+ * Returns the script corresponding to the message type
+ * @param {String} peerConnection The peer connection 
+ * @param {String} type Type of sdp message
+ * @returns {String} The sdp message script
+ */
+const sdpMessageScript = function(peerConnection, type) {
+  switch (type) {
+    case 'offer':
+      return "var SDP;"
+      + "try {SDP = " + peerConnection + ".remoteDescription;} catch (exception) {} "
+      + "if (SDP) {return SDP;} else {return 'unknown';}";
+    case "answer":
+      return "var SDP;"
+      + "try {SDP = " + peerConnection + ".localDescription;} catch (exception) {} "
+      + "if (SDP) {return SDP;} else {return 'unknown';}";
+    default: 
+      throw new Error("Not a valid type for sdp message.");
+  }
+}
 
-const getSumFunctionScript = 'function getSum(total, num) {return total + num;};';
-
+// Video
 /**
  * Gets the script to get the sum of the pixels of a video with its id
  * @param {Number} id Video id
@@ -49,6 +86,9 @@ const getPixelSumByIndexScript = function(index) {
   + "return sum;} else {return 0 }";
 }
 
+const getSumFunctionScript = 'function getSum(total, num) {return total + num;};';
+
+// Stats
 /**
  * Gets the script to get the statistics 
  * @param {statsType} statsType Type of statistics
@@ -196,46 +236,13 @@ const stashStat = function(statsType, pc) {
 }
 
 /**
- * Gets the sdp message
+ * Waits for elements with a class name
  * @param {Object} driver 
- * @param {String} peerConnection The peer connection 
- * @param {String} type Type of sdp message
- * @returns {Object} The sdp object
+ * @param {String} className Class name of the elements to be waited for
+ * @returns {Boolean}  
  */
-const getSDPMessage = async function(driver, peerConnection, type) {
-  const sdpObj = await driver.executeScript(sdpMessageScript(peerConnection, type));
-  await waitAround(1000);
-  return sdpObj;
-}
-
-/**
- * Returns the script corresponding to the message type
- * @param {String} peerConnection The peer connection 
- * @param {String} type Type of sdp message
- * @returns {String} The sdp message script
- */
-const sdpMessageScript = function(peerConnection, type) {
-  switch (type) {
-    case 'offer':
-      return "var SDP;"
-      + "try {SDP = " + peerConnection + ".remoteDescription;} catch (exception) {} "
-      + "if (SDP) {return SDP;} else {return 'unknown';}";
-    case "answer":
-      return "var SDP;"
-      + "try {SDP = " + peerConnection + ".localDescription;} catch (exception) {} "
-      + "if (SDP) {return SDP;} else {return 'unknown';}";
-    default: 
-      throw new Error("Not a valid type for sdp message.");
-  }
-}
-
-/**
- * Waits for elements with a tag name
- * @param {Object} driver 
- * @param {String} tagName Tag name of the elements to be waited for
- */
-const waitForElementsWithTagName = async function(driver, tagName) {
-  const videoElements = await driver.findElements(By.tagName(tagName));
+const waitForElementsWithClassName = async function(driver, className) {
+  const videoElements = await driver.findElements(By.className(className));
   return videoElements.length > 0;
 };
 
@@ -250,15 +257,248 @@ const waitForElementsWithId = async function(driver, id) {
 };
 
 /**
- * Waits for elements with a class name
+ * Waits for elements with a tag name
  * @param {Object} driver 
- * @param {String} className Class name of the elements to be waited for
- * @returns {Boolean}  
+ * @param {String} tagName Tag name of the elements to be waited for
  */
-const waitForElementsWithClassName = async function(driver, className) {
-  const videoElements = await driver.findElements(By.className(className));
+const waitForElementsWithTagName = async function(driver, tagName) {
+  const videoElements = await driver.findElements(By.tagName(tagName));
   return videoElements.length > 0;
 };
+
+
+/* ======================================== EXPORTED ======================================== */
+
+const extractStats = function(senderStats, receiverStats) {
+  return statsUtils.extractStats(senderStats, receiverStats);
+}
+
+const extractJson = function(senderStats, direction) {
+  return statsUtils.extractJson(senderStats, direction);
+}
+
+/**
+ * Retrieves arguments and information useful for tests
+ * @param {String} dirname __dirname | Path to JS folder
+ * @returns {Object} A collection of named values containing information for testing
+ */
+const getGlobalVariables = function(dirname){
+  if (dirname.includes("\\")) {
+    dirname = dirname.replace(/\\/g, "/");
+  }
+  const numberOfParticipant = process.argv[2];
+  const id = process.argv[3]; // To identify browsers
+  const uuid = process.argv[4];
+  let reportPath = process.argv[5];
+  let reportPathWithoutPt = dirname + reportPath.substr(1, reportPath.length);
+  const payloadPath = reportPathWithoutPt + '/payload.json';
+  const networkInstrumentationPath = reportPathWithoutPt + '/networkInstrumentation.json'; 
+  const capabilitiesPath = reportPathWithoutPt + '/' + id + '/capabilities.json';
+  reportPath = reportPath + '/' + id;
+  const resultFilePath = reportPath + '/' + uuid + '-result.json';
+  let variables = {
+    numberOfParticipant: numberOfParticipant,
+    id: id,
+    uuid: uuid,
+    capabilitiesPath: capabilitiesPath,
+    payloadPath: payloadPath,
+    networkInstrumentationPath: networkInstrumentationPath,
+    reportPath: reportPath,	
+    resultFilePath: resultFilePath,
+  };
+  return variables; 
+}
+
+/**
+ * Gets KITE config
+ * @param {String} dirname __dirname | Path to JS folder
+ * @returns KITE config
+ */
+const getKiteConfig = async function(dirname) {
+  let variables = getGlobalVariables(dirname);
+  const numberOfParticipant = variables.numberOfParticipant;
+  const id = variables.id;
+  const uuid = variables.uuid;
+  const capabilities = require(variables.capabilitiesPath);
+  const reportPath = variables.reportPath;
+  const remoteUrl = capabilities.remoteUrl;
+  const resultFilePath = variables.resultFilePath;
+
+  // Payload
+  let payloadPath = variables.payloadPath;
+  let payload;
+  if (fs.existsSync(payloadPath)) {
+    payload = require(payloadPath);
+  }
+  
+  // Network Instrumentation
+  let nwInstPath = variables.networkInstrumentationPath 
+  let networkInstrumentation;
+  if (fs.existsSync(nwInstPath)) {
+    let tmpNwInstPath = require(nwInstPath);
+    networkInstrumentation = await getNetworkInstrumentationFromFile(tmpNwInstPath, remoteUrl);
+  }
+
+  let config = {
+    capabilities: capabilities,
+    id: id,
+    networkInstrumentation: networkInstrumentation,
+    numberOfParticipant: numberOfParticipant,
+    payload: payload,
+    remoteUrl: remoteUrl,
+    reportPath: reportPath,
+    resultFilePath: resultFilePath,
+    uuid, uuid,
+  };
+  return config;
+}
+
+const getNetworkInstrumentationFromFile = async function(nwInstJson, remoteUrl) {
+  let networkInstrumentation = {};
+  let nwInstArray = Object.keys(nwInstJson);
+  for (let i = 0; i < nwInstArray.length; i++) {
+    let idx = nwInstJson[nwInstArray[i]];
+    let res = "";
+    // console.log(typeof idx);
+    if (typeof idx === "string") {
+      if (idx.includes("file://")) {
+        // Local file
+        let tmp = idx.replace("file://", "");
+        res = require(tmp);
+      } 
+      if (idx.includes("http") && idx.includes("://")) {
+        // Remote file (http | https => URL)
+        res = await fetch(idx);
+        res = await res.json();
+      }
+      networkInstrumentation[nwInstArray[i]] = res[nwInstArray[i]];
+    } else { // Already a json
+      networkInstrumentation[nwInstArray[i]] = idx;
+    }
+  }
+  let nwInstrumentation = new NetworkInstrumentation(networkInstrumentation, remoteUrl);
+  return nwInstrumentation;
+} 
+
+/**
+ * Gets the statistics once
+ * @param {Object} driver 
+ * @param {String} statsType Type of statistics
+ * @param {String} pc The peer connection 
+ * @returns An array of statistics
+ */
+const getStatOnce = async function(driver, statsType, pc) {
+  await driver.executeScript(stashStat(statsType, pc));
+  await waitAround(100);
+  const stat = await driver.executeScript(getStashedStat(statsType));
+  return stat;
+}
+
+/**
+ * Gets the statistics several times
+ * @param {Object} stepInfo Reference to the Step object
+ * @param {String} statsType Type of statistics
+ * @param {String} pc The peer connection
+ * @returns A collection of named values 
+ */
+const getStats = async function(stepInfo, statsType, pc) {
+  let stats = {};
+  for (let i = 0; i < stepInfo.statsCollectionTime; i += stepInfo.statsCollectionInterval) {
+    let stat = await this.getStatOnce(stepInfo.driver, statsType, pc);
+    if (i == 0) {
+      stats['stats'] = [];
+      let offer = await getSDPMessage(stepInfo.driver, pc, "offer");
+      let answer = await getSDPMessage(stepInfo.driver, pc, "answer");
+      stats['offer'] = offer;
+      stats['answer'] = answer;
+    }
+    stats['stats'].push(stat);
+    await waitAround(stepInfo.statsCollectionInterval * 1000);
+  }
+  return statsUtils.buildClientStatObject(stats, stepInfo.selectedStats);
+}
+
+/**
+ * Checks the video with an given index
+ * @param {Object} driver 
+ * @param {Number} index Video index to be checked
+ * @returns A collection of named values
+ */
+
+/**
+ * Navigates to the url and wait for the page to be ready
+ * @param {Object} stepInfo Reference to the Step object
+ */
+const open = async function(stepInfo) {
+  await stepInfo.driver.get(stepInfo.url);
+  await this.waitForPage(stepInfo.driver, stepInfo.timeout); 
+}
+
+/**
+ * Takes a screenshot of the current page and returns it
+ * @param {WebDriver} driver
+ * @returns {Object} A base-64 encoded PNG 
+ */
+const takeScreenshot = async function(driver) {
+  const image = await driver.takeScreenshot();
+  return image;
+}
+
+const verifyVideoDisplayByIndex = async function(driver, index) {
+  const sumArray = [];
+  let result = {};
+  let videoCheck = 'video';
+  const sum1 = await driver.executeScript(getPixelSumByIndexScript(index));
+  sumArray.push(sum1);
+  await waitAround(1000);
+  const sum2 = await driver.executeScript(getPixelSumByIndexScript(index));
+  sumArray.push(sum2);
+
+  if (sumArray.length == 0 || sumArray.includes(0)) {
+    videoCheck = 'blank';
+    //throw new Error('The video was blank at the moment of checking');
+  } else {
+    if (Math.abs(sumArray[0] - sumArray[1]) == 0) {
+        videoCheck = 'still';
+        //throw new Error('The video was still at the moment of checking');
+    }
+    console.log('Verified video display for video[' + index + '] successfully with ' + sumArray[0] + ' and ' + sumArray[1]);
+    result['result'] = videoCheck;
+    result['details'] = sumArray;
+  }
+  return result;
+}
+
+/**
+ * Checks the video with an given id
+ * @param {Object} driver 
+ * @param {Number} id Video id to be checked
+ * @returns A collection of named values
+ */
+const verifyVideoDisplayById = async function(driver, id) {
+  const sumArray = [];
+  let result = {};
+  let videoCheck = 'video';
+  const sum1 = await driver.executeScript(getPixelSumsByIdScript(id));
+  sumArray.push(sum1);
+  await waitAround(1000);
+  const sum2 = await driver.executeScript(getPixelSumsByIdScript(id));
+  sumArray.push(sum2);
+
+  if (sumArray.length == 0 || sumArray.includes(0)) {
+    videoCheck = 'blank';
+    //throw new Error('The video was blank at the moment of checking');
+  } else {
+    if (Math.abs(sumArray[0] - sumArray[1]) == 0) {
+        videoCheck = 'still';
+        //throw new Error('The video was still at the moment of checking');
+    }
+    console.log('Verified video display for [' + id + '] successfully with ' + sumArray[0] + ' and ' + sumArray[1]);
+    result['result'] = videoCheck;
+    result['details'] = sumArray;
+  }
+  return result;
+}
 
 /**
  * Waits a while
@@ -270,244 +510,90 @@ const	waitAround = function (ms) {
 }
 
 /**
- * Checks if the state the document is "complete"
+ * Waits for element in the current page
  * @param {Object} driver 
- * @returns {Boolean} 
+ * @param {String} type The type of element 
+ * @param {String} value The element value
+ * @param {Number} timeout Time in s before it timeout  
  */
-const isDocumentReady = async function(driver) {
-  const s = await driver.executeScript("return document.readyState");
-  return s === "complete";
+const waitForElement = async function(driver, type, value, timeout) {
+  switch(type) {
+    case 'id': {
+      return driver.wait(waitForElementsWithId(driver, value), timeout * 1000);
+    }
+    case 'className': {
+      return driver.wait(waitForElementsWithClassName(driver, value), timeout * 1000);
+    }
+    case 'tagName': {
+      return driver.wait(waitForElementsWithTagName(driver, value), timeout * 1000);
+    }
+    default:
+      throw new Error('Unsupported wait type: ' + type);
+  }
 }
 
-// todo: doc
+/**
+ * Waits for page to be ready 
+ * @param {WebDriver} driver 
+ * @param {Number} timeout Time in s before it timeout 
+ */
+const waitForPage = async function(driver, timeout) {
+  await driver.wait(isDocumentReady(driver), timeout * 1000);
+}
+
+/**
+ * Waits for the video elements of the page 
+ * @param {Object} stepInfo Reference to the Step object
+ * @param {String} videoElements 
+ */
+const waitForVideos = async function(stepInfo, videoElements) {
+  let videos = [];
+  let i = 0;
+  while (videos.length < stepInfo.numberOfParticipant && i < stepInfo.timeout) {
+    videos = await stepInfo.driver.findElements(videoElements);
+    i++;
+    await waitAround(1000); // waiting 1s after each iteration
+    }
+  // Make sure that it has not timed out
+  if (i === stepInfo.timeout) {
+    throw new KiteTestError(Status.FAILED, "unable to find " +
+      stepInfo.numberOfParticipant + " <video> element on the page. Number of video found = " +
+      videos.length);
+  }
+}
+
 /**
  * Writes the desired content in a file
  * @param {String} fileName The file in which to write
  * @param {String} content The content to write
  */
-const writeToFile = function (fileName, content) {
+const writeToFile = function(fileName, content) {
   let writeStream = fs.createWriteStream(fileName);
-
   writeStream.write(content);
-
   // the finish event is emitted when all data has been flushed from the stream
   writeStream.on('finish', () => {
       console.log('wrote all data to file');
   });
-
   // close the stream
   writeStream.end();
 }
 
-module.exports = {
-  KiteTestError, 
-  waitAround,
-  
+module.exports = { 
   // todo: appendToFile function
-
-  writeToFile,
-
-  /**
-   * Retrieves arguments and information useful for tests
-   * @param {Object} process Provides information about the current Node.js process
-   * @returns {Object} A collection of named values containing information for testing
-   */
-  getGlobalVariables: function(process){
-    const numberOfParticipant = process.argv[2];
-    const id = process.argv[3]; // To identify browsers
-    const uuid = process.argv[4];
-    let reportPath = process.argv[5];
-    
-    const payloadPath = reportPath + '/payload.json';
-    reportPath = reportPath + '/' + id;
-    const capabilitiesPath = reportPath + '/capabilities.json';
-    const resultFilePath = reportPath + '/' + uuid + '-result.json';
-    const screenshotFolderPath = reportPath + '/screenshots';
-    let variables = {
-      numberOfParticipant: numberOfParticipant,
-      id: id,
-      uuid: uuid,
-      capabilitiesPath: capabilitiesPath,
-      payloadPath: payloadPath,
-      reportPath: reportPath,	
-      resultFilePath: resultFilePath,
-      screenshotFolderPath: screenshotFolderPath
-    }
-    return variables; 
-  },
-
-  /**
-   * Waits for page to be ready 
-   * @param {WebDriver} driver 
-   * @param {Number} timeout Time in s before it timeout 
-   */
-  waitForPage: async function(driver, timeout) {
-    await driver.wait(isDocumentReady(driver), timeout * 1000);
-  },
-
-  /**
-   * Waits for element in the current page
-   * @param {Object} driver 
-   * @param {String} type The type of element 
-   * @param {String} value The element value
-   * @param {Number} timeout Time in s before it timeout  
-   */
-  waitForElement: async function(driver, type, value, timeout) {
-    switch(type) {
-      case 'id': {
-        return driver.wait(waitForElementsWithId(driver, value), timeout * 1000);
-      }
-      case 'className': {
-        return driver.wait(waitForElementsWithClassName(driver, value), timeout * 1000);
-      }
-      case 'tagName': {
-        return driver.wait(waitForElementsWithTagName(driver, value), timeout * 1000);
-      }
-      default:
-        throw new Error('Unsupported wait type: ' + type);
-    }
-  },
-
-  /**
-   * Gets the statistics once
-   * @param {Object} driver 
-   * @param {String} statsType Type of statistics
-   * @param {String} pc The peer connection 
-   * @returns An array of statistics
-   */
-  getStatOnce: async function(driver, statsType, pc) {
-    await driver.executeScript(stashStat(statsType, pc));
-    await waitAround(100);
-    const stat = await driver.executeScript(getStashedStat(statsType));
-    return stat;
-  },
-  
-  /**
-   * Gets the statistics several times
-   * @param {Object} stepInfo Reference to the Step object
-   * @param {String} statsType Type of statistics
-   * @param {String} pc The peer connection
-   * @returns A collection of named values 
-   */
-  getStats: async function(stepInfo, statsType, pc) {
-    let stats = {};
-    for (let i = 0; i < stepInfo.statsCollectionTime; i += stepInfo.statsCollectionInterval) {
-      let stat = await this.getStatOnce(stepInfo.driver, statsType, pc);
-      if (i == 0) {
-        stats['stats'] = [];
-        let offer = await getSDPMessage(stepInfo.driver, pc, "offer");
-        let answer = await getSDPMessage(stepInfo.driver, pc, "answer");
-        stats['offer'] = offer;
-        stats['answer'] = answer;
-      }
-      stats['stats'].push(stat);
-      await waitAround(stepInfo.statsCollectionInterval * 1000);
-    }
-    return statsUtils.buildClientStatObject(stats, stepInfo.selectedStats);
-  },
-
-  extractStats,
   extractJson,
-
-  /**
-   * Checks the video with an given index
-   * @param {Object} driver 
-   * @param {Number} index Video index to be checked
-   * @returns A collection of named values
-   */
-  verifyVideoDisplayByIndex: async function(driver, index) {
-    const sumArray = [];
-    let result = {};
-    let videoCheck = 'video';
-    const sum1 = await driver.executeScript(getPixelSumByIndexScript(index));
-    sumArray.push(sum1);
-    await waitAround(1000);
-    const sum2 = await driver.executeScript(getPixelSumByIndexScript(index));
-    sumArray.push(sum2);
-
-    if (sumArray.length == 0 || sumArray.includes(0)) {
-      videoCheck = 'blank';
-      //throw new Error('The video was blank at the moment of checking');
-    } else {
-      if (Math.abs(sumArray[0] - sumArray[1]) == 0) {
-          videoCheck = 'still';
-          //throw new Error('The video was still at the moment of checking');
-      }
-      console.log('Verified video display for video[' + index + '] successfully with ' + sumArray[0] + ' and ' + sumArray[1]);
-      result['result'] = videoCheck;
-      result['details'] = sumArray;
-    }
-    return result;
-  },
-
-    /**
-   * Checks the video with an given id
-   * @param {Object} driver 
-   * @param {Number} id Video id to be checked
-   * @returns A collection of named values
-   */
-  verifyVideoDisplayById: async function(driver, id) {
-    const sumArray = [];
-    let result = {};
-    let videoCheck = 'video';
-    const sum1 = await driver.executeScript(getPixelSumsByIdScript(id));
-    sumArray.push(sum1);
-    await waitAround(1000);
-    const sum2 = await driver.executeScript(getPixelSumsByIdScript(id));
-    sumArray.push(sum2);
-
-    if (sumArray.length == 0 || sumArray.includes(0)) {
-      videoCheck = 'blank';
-      //throw new Error('The video was blank at the moment of checking');
-    } else {
-      if (Math.abs(sumArray[0] - sumArray[1]) == 0) {
-          videoCheck = 'still';
-          //throw new Error('The video was still at the moment of checking');
-      }
-      console.log('Verified video display for [' + id + '] successfully with ' + sumArray[0] + ' and ' + sumArray[1]);
-      result['result'] = videoCheck;
-      result['details'] = sumArray;
-    }
-    return result;
-  },
-
-  /**
-   * Takes a screenshot of the current page and return it
-   * @param {WebDriver} driver
-   * @returns {Object} A base-64 encoded PNG 
-   */
-  takeScreenshot: async function(driver) {
-    const image = await driver.takeScreenshot();
-    return image;
-  },
-
-  /**
-   * Navigates to the url and wait for the page to be ready
-   * @param {Object} stepInfo Reference to the Step object
-   */
-  open: async function(stepInfo) {
-    await stepInfo.driver.get(stepInfo.url);
-    await this.waitForPage(stepInfo.driver, stepInfo.timeout); 
-  },
-
-  /**
-   * Waits for the video elements of the page 
-   * @param {Object} stepInfo Reference to the Step object
-   * @param {String} videoElements 
-   */
-  waitVideos: async function(stepInfo, videoElements) {
-    let videos = [];
-    let i = 0;
-    while (videos.length < stepInfo.numberOfParticipant && i < stepInfo.timeout) {
-      videos = await stepInfo.driver.findElements(videoElements);
-      i++;
-      await waitAround(1000); // waiting 1s after each iteration
-      }
-    // Make sure that it has not timed out
-    if (i === stepInfo.timeout) {
-      throw new KiteTestError(Status.FAILED, "unable to find " +
-        stepInfo.numberOfParticipant + " <video> element on the page. Number of video found = " +
-        videos.length);
-    }
-  }
+  extractStats,
+  getGlobalVariables,
+  getKiteConfig,
+  getNetworkInstrumentationFromFile,
+  getStatOnce,
+  getStats,
+  open,
+  takeScreenshot,
+  verifyVideoDisplayByIndex,
+  verifyVideoDisplayById,
+  waitAround,
+  waitForElement,
+  waitForPage,
+  waitForVideos,
+  writeToFile,
 }
