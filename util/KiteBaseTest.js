@@ -78,7 +78,7 @@ class KiteBaseTest {
       this.selectedStats = getStats.selectedStats;
     }
     let scenarios = payload.scenarios;
-    if (scenarios && this.networkInstrumentation) {
+    if (scenarios && scenarios.length > 0 && this.networkInstrumentation) {
       this.scenarios = [];
       for(let i = 0; i < scenarios.length; i++) {
         this.scenarios.push(new Scenario(scenarios[i], this.networkInstrumentation));
@@ -118,7 +118,7 @@ class KiteBaseTest {
     if (this.numberOfParticipant > 1 && this.port) {
       try {
         let waiting = true;
-        let i = 0
+        let i = 0;
         while(waiting && i < this.timeout) {
           if(i==0) {
             this.io.emit("test finished", this.id);
@@ -135,6 +135,27 @@ class KiteBaseTest {
         console.log(e);
       }
     }
+  }
+
+  /**
+   * Gets the room
+   * @returns {String} The Url with the room
+   */
+  getRoomUrl(info) {
+    if (info.payload && info.payload.rooms && info.payload.usersPerRoom > 0) {
+      if (info.numberOfParticipant % info.payload.usersPerRoom !== 0) {
+        console.log("/!\\ Total number of participants % userPerRoom must be egal to 0 !");
+        console.log("/!\\ That can lead to errors in your tests !");
+      }
+      info.numberOfParticipant = info.payload.usersPerRoom;
+      const roomid = Math.floor(info.id / info.payload.usersPerRoom);
+      if (roomid > info.payload.rooms.length) {
+        console.error('Not enough rooms');
+        return;
+      }
+      return info.url + info.payload.rooms[roomid];
+    }
+    return "";
   }
 }
 

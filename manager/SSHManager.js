@@ -39,9 +39,17 @@ class SSHManager {
     try {
       await ssh.connect();
       console.log("Connection established");
-      data = await ssh.exec(this.command);
+      data = await ssh.exec(this.commandLine);
+      data = "SUCCEEDED";
     } catch (e) {
+      // Sometimes it catches "RTNETLINK answers: File exists" even if the command worked
+      e = e.toString();
       console.log(e);
+      if (e.includes('RTNETLINK answers: File exists')) {
+        data = "SUCCEEDED";
+      } else {
+        data = "FAILED";
+      }
     } finally {
       if (typeof ssh !== "undefined") {
         await ssh.close();

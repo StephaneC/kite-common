@@ -418,8 +418,8 @@ function computePacketsLoss(jsonObject, noStats, mediaType) {
           let packetsLost = parseFloat(l);
           let totalPackets = parseFloat(s) + packetsLost;
           if(totalPackets > 0) {
-            let packetLoss = packetsLost / totalPackets;
-            return packetLoss.toFixed(3);
+            let packetLoss = packetsLost / totalPackets * 100;
+            return packetLoss.toFixed(2);
           }
         } else {
           console.log('computePacketsLoss');

@@ -133,16 +133,15 @@ class Scenario {
       console.log(result);
       tmp = await this.runCommandGateway(this.command, this.networkInstrumentation); 
       result += tmp;
-      console.log("result after command sent" + result);
     }
     if (this.type === "client") {
       let session = "" + await driver.getSession();
-      // TODO
+      // TODO Test it
       //let nodeIp = getPrivateIp(this.networkInstrumentation.getRemoteAddress(), session);
       result += "client " + nodeIp;
       let platform = await driver.getCapabilities().getPlatform();
       if (platform.toUpperCase() === "LINUX") {
-        // TODO
+        // TODO Test it
         // result += this.runCommandClient(this.command, this.networkInstrumentation, nodeIp);
       } else {
         result += "Node " + nodeIp + " is not Linux";
@@ -165,13 +164,13 @@ class Scenario {
     }
     if (this.type === "client") {
       let sessionId = await driver.getSession().getId(); 
-      // TODO
+      // TODO Test it
       // let nodeIp = getPrivateIp(this.networkInstrumentation.getRemoteAddress(), sessionId);
       result += "client " + nodeIp;
       let platform = await driver.getCapabilities().getPlatform();
       if (platform.toUpperCase() === "LINUX") {
         tmp = await this.runCommandClient(cleanUpCommand, this.networkInstrumentation, nodeIp);
-        result += tmp
+        result += tmp;
       } else {
         result += " FAILED, check instrumentalUrl !";
       }
@@ -185,11 +184,7 @@ class Scenario {
       let sshManager = new SSHManager(instance.getKeyFilePath(),
         instance.getUsername(), instance.getIpAddress(), command);
       let tmp = await sshManager.call();
-      if (tmp === "") {
-        result = "SUCCEEDED";
-      } else {
-        result = "FAILED";
-      }
+      result = tmp;
 
     } catch (e) {
       console.log(e);
