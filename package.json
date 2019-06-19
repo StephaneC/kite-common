@@ -29,7 +29,8 @@
     "fs": "^0.0.1-security",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "socket.io-client": "^2.2.0",
-    "ssh2-promise": "^0.1.5"
+    "ssh2-promise": "^0.1.5",
+    "node-fetch": "^2.6.0"
   },
   "deprecated": false,
   "description": "KITE Tests",
