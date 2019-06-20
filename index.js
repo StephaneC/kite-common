@@ -13,4 +13,7 @@ exports.WebDriverUtility = require('./wdmgmt/WebDriverUtility');
 // Steps
 exports.ScreenshotStep = require('./steps/ScreenshotStep');
 
+// Instrumentation
+exports.Scenario = require('./instrumentation/Scenario');
+exports.NetworkInstrumentation = require('./instrumentation/NetworkInstrumentation');
 

@@ -31,7 +31,7 @@ module.exports = {
     const cap = {};
     cap.browserName = capabilities.browserName;
     cap.version = capabilities.version;
-
+    cap.gateway = capabilities.gateway ? capabilities.gateway : null;
     if (capabilities.platformName === 'localhost') {
       let systemName = getSystemPlatform();
       cap.platformName = systemName;
