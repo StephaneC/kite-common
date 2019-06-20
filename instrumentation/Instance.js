@@ -25,7 +25,7 @@ class Instance {
       this.nit0 = jsonObject.nit0;
       missingKey = 'nit1';
       this.nit1 = jsonObject.nit1;
-      missingKey = 'nite2';
+      missingKey = 'nit2';
       this.nit2 = jsonObject.nit2;
     } catch (e) {
       throw new KiteTestError(Status.BROKEN, "Error in json config instrumentation, the key " + missingKey + " is missing.");
