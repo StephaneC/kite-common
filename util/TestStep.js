@@ -59,15 +59,18 @@ class TestStep {
    * Initializes the description and the step report
    */
   init() {
-    let description = this.stepDescription();
-    this.report = new AllureStepReport(description);
-    this.report.setDescription(description);
+    this.report = new AllureStepReport("place holder");
   }
 
   /**
-   * Updates the end date of the report 
+   * Updates the end date and the description of the report 
    */
-  finish() {
+  async finish() {
+    let capabilities = await this.driver.getCapabilities();
+    let browserName = "[" + capabilities.getBrowserName() + "] ";
+    let description = browserName + this.stepDescription();
+    this.report.setName(description);
+    this.report.setDescription(description);
     this.report.setStopTimestamp();
   }
   
