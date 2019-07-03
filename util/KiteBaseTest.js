@@ -107,7 +107,9 @@ class KiteBaseTest {
     } catch (e) {
       console.log(e);
     } finally {
-      this.io.close();
+      if (this.io) {
+        this.io.close();
+      }
     }
   }
 

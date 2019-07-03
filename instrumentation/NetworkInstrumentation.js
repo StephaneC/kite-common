@@ -41,11 +41,9 @@ class NetworkInstrumentation {
     jsonArray = jsonObject.networkProfiles;
     for (let i = 0; i < jsonArray.length; i++) {
       try {
-        missingKey = "name";
-        let name = jsonArray[i].name;
         missingKey = "networkProfile";
-        networkProfile = new NetworkProfile(jsonArray[i].networkProfile);
-        this.networkProfiles[name] = networkProfile;
+        networkProfile = new NetworkProfile(jsonArray[i]);
+        this.networkProfiles[networkProfile.getName()] = networkProfile;
       } catch (e) {
         console.log(e);
         throw new KiteTestError(Status.Broken, "Error in json config networkProfiles, the key " + missingKey + " is missing.");
