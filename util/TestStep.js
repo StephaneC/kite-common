@@ -32,9 +32,6 @@ class TestStep {
       } else {
         this.skip();
       }
-      await this.finish();
-      await KiteBaseTest.report.addStepReport(this.report.getJsonBuilder()); 
-
     } catch (error) {
       if(error instanceof KiteTestError) {
         console.log(error.message);
@@ -43,8 +40,10 @@ class TestStep {
         console.log(error);
         KiteBaseTest.report.status = Status.BROKEN;
       }
-
-    }
+      this.report.setStatus(KiteBaseTest.report.status);
+    } finally {
+      await this.finish();
+      await KiteBaseTest.report.addStepReport(this.report.getJsonBuilder()); 
   }
 
   /**
