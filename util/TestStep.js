@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const {AllureStepReport, KiteTestError, Status} = require('../report');
 
 /**
@@ -44,6 +48,7 @@ class TestStep {
     } finally {
       await this.finish();
       await KiteBaseTest.report.addStepReport(this.report.getJsonBuilder()); 
+    }
   }
 
   /**

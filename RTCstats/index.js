@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 exports.RTCCodecStats = require('./RTCCodecStats');
 exports.RTCMediaStreamTracksStats = require('./RTCMediaStreamTracksStats');
 exports.RTCMediaStreamStats = require('./RTCMediaStreamStats');

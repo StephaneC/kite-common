@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 // ATM: Useless
 
 const Entity = require('./Entity');

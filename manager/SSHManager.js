@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const SSH2Promise = require('ssh2-promise');
 
 const filePath = function(path) {

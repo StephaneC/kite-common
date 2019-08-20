@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const {AllureTestReport, Reporter} = require('../report');
 const Scenario = require('../instrumentation/Scenario');
 const TestUtils = require('./TestUtils');

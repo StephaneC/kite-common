@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const KiteTestError = require('../report/KiteTestError');
 const Status = require('../report/Status');
 const NetworkInstrumentation = require('./NetworkInstrumentation');

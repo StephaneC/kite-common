@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const CustomAttachment = require('./CustomAttachment');
 const {TestUtils} = require('kite-common');
 
