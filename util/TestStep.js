@@ -44,6 +44,7 @@ class TestStep {
     } finally {
       await this.finish();
       await KiteBaseTest.report.addStepReport(this.report.getJsonBuilder()); 
+    }
   }
 
   /**
