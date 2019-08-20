@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const RTCStatObject = require('./RTCStatObject');
 
 class RTCTransportStats extends RTCStatObject {

@@ -1,4 +1,6 @@
-
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
 
 class RTCStatObject {
   constructor() {

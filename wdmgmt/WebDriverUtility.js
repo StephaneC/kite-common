@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const firefox = require('selenium-webdriver/firefox');
 const {KiteTestError, Status} = require("../report");
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const WebDriverUtils = require('./WebDriverUtility.js');
 const {Builder} = require('selenium-webdriver');
 

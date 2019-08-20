@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const fs = require('fs');
 const {By} = require('selenium-webdriver');
 const statsUtils = require('./statsUtils');

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const Entity = require('./Entity');
 const Status = require('./Status'); 
 const Parameter = require('./Parameter');

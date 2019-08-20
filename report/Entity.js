@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const Stage = require('./Stage');
 const generateUUID = require('./generate-uuid');
 

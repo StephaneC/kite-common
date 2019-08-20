@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const AllureStepReport = require('./AllureStepReport');
 const Parameter = require('./Parameter');
 const generateUUID = require('./generate-uuid');

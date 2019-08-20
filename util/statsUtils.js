@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 const {RTCCodecStats, RTCMediaStreamStats, RTCRTPStreamStats,
       RTCPeerConnectionStats, RTCTransportStats, RTCIceCandidatePairStats,
       RTCIceCandidateStats} = require('../RTCstats');

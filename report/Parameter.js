@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
+*/
+
 /**
  * @class Parameter
  * @description Creates a parameter with a name and a value
