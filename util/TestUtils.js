@@ -364,7 +364,7 @@ const getNetworkInstrumentationFromFile = async function(nwInstJson, remoteUrl) 
     let idx = nwInstJson[nwInstArray[i]];
     let res = "";
     // console.log(typeof idx);
-    if (typeof idx === "string") {
+    if (typeof idx === "string" && (nwInstArray[i] === "instances" || nwInstArray[i] === "networkProfiles")) {
       if (idx.includes("file://")) {
         // Local file
         let tmp = idx.replace("file://", "");
@@ -380,7 +380,7 @@ const getNetworkInstrumentationFromFile = async function(nwInstJson, remoteUrl) 
       networkInstrumentation[nwInstArray[i]] = idx;
     }
   }
-  let nwInstrumentation = new NetworkInstrumentation(networkInstrumentation, remoteUrl);
+  let nwInstrumentation = new NetworkInstrumentation(networkInstrumentation, networkInstrumentation["remoteAdress"], networkInstrumentation["kiteServerGridId"]);
   return nwInstrumentation;
 } 
 
@@ -467,9 +467,9 @@ const verifyVideoDisplayByIndex = async function(driver, index) {
         //throw new Error('The video was still at the moment of checking');
     }
     console.log('Verified video display for video[' + index + '] successfully with ' + sumArray[0] + ' and ' + sumArray[1]);
-    result['result'] = videoCheck;
-    result['details'] = sumArray;
   }
+  result['result'] = videoCheck;
+  result['details'] = sumArray;
   return result;
 }
 
@@ -498,9 +498,9 @@ const verifyVideoDisplayById = async function(driver, id) {
         //throw new Error('The video was still at the moment of checking');
     }
     console.log('Verified video display for [' + id + '] successfully with ' + sumArray[0] + ' and ' + sumArray[1]);
-    result['result'] = videoCheck;
-    result['details'] = sumArray;
   }
+  result['result'] = videoCheck;
+  result['details'] = sumArray;
   return result;
 }
 
