@@ -34,7 +34,13 @@ class NetworkInstrumentation {
       this.instances = {};
       for (let i = 0; i < jsonArray.length; i++) {
         try {
-          let instance = new Instance(jsonArray[i]);
+          let instanceObj;
+          if (typeof jsonArray[i] === "string") {
+            instanceObj = JSON.parse(jsonArray[i]);
+          } else {
+            instanceObj = jsonArray[i]; 
+          }
+          let instance = new Instance(instanceObj);
           this.instances[instance.getId()] = instance;
         } catch (e) {
           console.log(e);
@@ -46,7 +52,13 @@ class NetworkInstrumentation {
     for (let i = 0; i < jsonArray.length; i++) {
       try {
         missingKey = "networkProfile";
-        networkProfile = new NetworkProfile(jsonArray[i]);
+        let profile;
+        if (typeof jsonArray[i] === "string") {
+          profile = JSON.parse(jsonArray[i]);
+        } else {
+          profile = jsonArray[i];
+        }
+        networkProfile = new NetworkProfile(profile);
         this.networkProfiles[networkProfile.getName()] = networkProfile;
       } catch (e) {
         console.log(e);

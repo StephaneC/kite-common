@@ -104,13 +104,13 @@ class KiteBaseTest {
   async run() {
     try {
       await this.testScript();
+    } catch (e) {
+      console.log(e);
+    } finally {
       this.report.setStopTimestamp();
       this.reporter.generateReportFiles();
       let value = this.report.getJsonBuilder();
       TestUtils.writeToFile(this.reportPath + '/result.json', JSON.stringify(value));
-    } catch (e) {
-      console.log(e);
-    } finally {
       if (this.io) {
         this.io.close();
       }

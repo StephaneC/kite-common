@@ -19,22 +19,23 @@ const getFirefoxOptions = function(capabilities) {
     profile = path + "/third_party/";
     switch(capabilities.platform.toUpperCase()) {
       case "WINDOWS": {
-        profile += "firefox-h264-profiles/h264-windows";
+        profile += "firefox-h264-profiles/windows";
         break;
       }
       case "MAC": {
-        profile += "firefox-h264-profiles/h264-mac";
+        profile += "firefox-h264-profiles/mac";
         break;
       }
       case "LINUX": {
-        profile += "firefox-h264-profiles/h264-linux";
+        profile += "firefox-h264-profiles/linux";
         break;
       }
     }
+    firefoxOptions = new firefox.Options().setProfile(profile);
   } else {
     console.log("FIREFOX: Some tests require specific profile for firefox to work properly.");
+    firefoxOptions = new firefox.Options();
   }
-  firefoxOptions = new firefox.Options().setProfile(profile);
   firefoxOptions.setPreference("media.navigator.permission.disabled", true);
   if (capabilities.useFakeMedia) {
     if (typeof capabilities.audio === "undefined" && typeof capabilities.video === "undefined") {
@@ -103,7 +104,7 @@ const fetchMediaPath = function(media, browserName) {
   return media.directory + media.filename + extension;
 }
 
-const makeRequest = function(method, url) {
+const makeRequest = async function(method, url) {
   return new Promise(function (resolve, reject) {
     let request = new XMLHttpRequest();
     request.open(method, url, true);
@@ -156,10 +157,12 @@ module.exports = {
     }
   },
 
-  getPublicIp: async function(driver) {
+  getPublicIp: async function(driverContext) {
+    let driver = driverContext.driver;
     let publicIpURL = "http://bot.whatismyipaddress.com";
     await driver.get(publicIpURL);
     let pageSource = await driver.getPageSource();
+    driverContext.driver = driver;
     try {
       return pageSource.split("<body>")[1].split("</body>")[0];
     } catch (e) {

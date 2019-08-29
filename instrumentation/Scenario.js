@@ -140,13 +140,11 @@ class Scenario {
     }
     if (this.type === "client") {
       let session = "" + await driver.getSession();
-      // TODO Test it
-      //let nodeIp = getPrivateIp(this.networkInstrumentation.getRemoteAddress(), session);
+      let nodeIp = getPrivateIp(this.networkInstrumentation.getRemoteAddress(), session);
       result += "client " + nodeIp;
       let platform = await driver.getCapabilities().getPlatform();
       if (platform.toUpperCase() === "LINUX") {
-        // TODO Test it
-        // result += this.runCommandClient(this.command, this.networkInstrumentation, nodeIp);
+        result += this.runCommandClient(this.command, this.networkInstrumentation, nodeIp);
       } else {
         result += "Node " + nodeIp + " is not Linux";
       }
@@ -168,8 +166,7 @@ class Scenario {
     }
     if (this.type === "client") {
       let sessionId = await driver.getSession().getId(); 
-      // TODO Test it
-      // let nodeIp = getPrivateIp(this.networkInstrumentation.getRemoteAddress(), sessionId);
+      let nodeIp = getPrivateIp(this.networkInstrumentation.getRemoteAddress(), sessionId);
       result += "client " + nodeIp;
       let platform = await driver.getCapabilities().getPlatform();
       if (platform.toUpperCase() === "LINUX") {

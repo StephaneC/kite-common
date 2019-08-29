@@ -29,7 +29,7 @@ const getSystemPlatform = function() {
  * @param {String} remoteAddress The remote address
  * @return {Object} The driver
  */
-const createWebDriver = function(capabilities, remoteAddress) {
+const createWebDriver = async function(capabilities, remoteAddress) {
   //to make sure the cap doesn't has anything weird:
   const cap = {};
   cap.browserName = capabilities.browserName;
@@ -44,7 +44,7 @@ const createWebDriver = function(capabilities, remoteAddress) {
     cap.platform = capabilities.platform;
   }
 
-  const options =  WebDriverUtils.getOptions(capabilities);
+  const options = WebDriverUtils.getOptions(capabilities);
   switch (cap.browserName) {
     case 'chrome': {
       cap['goog:chromeOptions'] =  options;
@@ -91,17 +91,17 @@ module.exports = {
    * @return {Object} The driver
    */
   getDriver: async function(capabilities, remoteAddress) {
-    let driver = createWebDriver(capabilities, remoteAddress);
+    this.driver = await createWebDriver(capabilities, remoteAddress);
     if (capabilities.browserName === 'firefox') {
       if (capabilities.useFakeMedia) {
         if (capabilities.video || capabilities.audio) {
           let gridId = capabilities.gridId ? capabilities.gridId : 'null';
-          let nodePublicIp = await WebDriverUtils.getPublicIp(driver);
+          let nodePublicIp = await WebDriverUtils.getPublicIp(this);
           let command = writeCommand(capabilities);
           await WebDriverUtils.makeCommand(gridId, nodePublicIp, command);
         }
       }
     }
-    return driver;   
+    return this.driver;   
   }
 }
