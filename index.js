@@ -8,6 +8,7 @@
 exports.KiteBaseTest = require('./util/KiteBaseTest');
 exports.KiteTestError = require('./report/KiteTestError');
 exports.TestStep = require('./util/TestStep');
+exports.BasePage = require('./pages/BasePage');
 exports.Status = require('./report/Status');
 
 exports.TestUtils = require('./util/TestUtils');
