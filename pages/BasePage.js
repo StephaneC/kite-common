@@ -3,7 +3,7 @@
 */
 const {By, Key, until} = require('selenium-webdriver');
 const {waitAround, getPixelSumByIndexScript} = require('../util/TestUtils');
-
+const ONE_SECOND = 1000;
 module.exports =  class BasePage {
 
 	constructor(driver) {
@@ -57,7 +57,7 @@ module.exports =  class BasePage {
 	 * @param {Number} timeout Time in s before it timeout
 	 */
 	async waitForPage ( timeout) {
-		await this.driver.wait(this.isDocumentReady(), timeout * 1000);
+		await this.driver.wait(this.isDocumentReady(), timeout * ONE_SECOND);
 	}
 
 	/**
@@ -148,20 +148,20 @@ module.exports =  class BasePage {
 		console.log('Checking video (' + index + ')');
 
 		// Check the status of the video
-		// checked.result = 'blank' || 'still' || 'video'
+		// result = 'blank' || 'still' || 'video'
 		let i = 0;
 		let result = await this.verifyVideoDisplayByIndex(index);
 		while(result === 'blank' || typeof result === "undefined" && i < timeout) {
 			result = await this.verifyVideoDisplayByIndex(this.driver, index);
 			i++;
-			await waitAround(1000);
+			await waitAround(ONE_SECOND);
 		}
 
 		i = 0;
-		while(i < 3 && checked.result !== 'video') {
+		while(i < 3 && result !== 'video') {
 			result = await this.verifyVideoDisplayByIndex(index);
 			i++;
-			await waitAround(3 * 1000); // waiting 3s after each iteration
+			await waitAround(3 * ONE_SECOND); // waiting 3s after each iteration
 		}
 		return result;
 	}
@@ -176,7 +176,7 @@ module.exports =  class BasePage {
 		let videoCheck = 'video';
 		const sum1 = await this.driver.executeScript(getPixelSumByIndexScript(index));
 		sumArray.push(sum1);
-		await waitAround(1000);
+		await waitAround(ONE_SECOND);
 		const sum2 = await this.driver.executeScript(getPixelSumByIndexScript(index));
 		sumArray.push(sum2);
 
