@@ -57,7 +57,7 @@ const sdpMessageScript = function(peerConnection, type) {
 // Video
 /**
  * Gets the script to get the sum of the pixels of a video with its id
- * @param {Number} id Video id
+ * @param {String} id Video id
  * @returns {String} The script to get the sum of the pixels of a video
  */
 const getPixelSumsByIdScript = function(id) {
@@ -548,7 +548,7 @@ const waitForPage = async function(driver, timeout) {
 /**
  * Waits for the video elements of the page 
  * @param {Object} stepInfo Reference to the Step object
- * @param {String} videoElements 
+ * @param {By} videoElements
  */
 const waitForVideos = async function(stepInfo, videoElements) {
   let videos = [];
@@ -588,7 +588,10 @@ module.exports = {
   extractStats,
   getGlobalVariables,
   getKiteConfig,
+  sdpMessageScript,
   getNetworkInstrumentationFromFile,
+  getPixelSumByIndexScript,
+  getPixelSumsByIdScript,
   getStatOnce,
   getStats,
   open,
