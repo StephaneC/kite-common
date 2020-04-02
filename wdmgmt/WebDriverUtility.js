@@ -12,12 +12,13 @@ const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
  */
 const getFirefoxOptions = function(capabilities) {
   let firefoxOptions;
+  const capability = capabilities.capability;
   let kiteHome = process.env.KITE_HOME;
   let profile = "";
   if(typeof kiteHome !== "undefined") {
     let path = kiteHome.split("\\").join('/');
     profile = path + "/third_party/";
-    switch(capabilities.platform.toUpperCase()) {
+    switch(capabilities.browserSpecs.platform.toUpperCase()) {
       case "WINDOWS": {
         profile += "firefox-h264-profiles/windows";
         break;
@@ -37,21 +38,21 @@ const getFirefoxOptions = function(capabilities) {
     firefoxOptions = new firefox.Options();
   }
   firefoxOptions.setPreference("media.navigator.permission.disabled", true);
-  if (capabilities.useFakeMedia) {
-    if (typeof capabilities.audio === "undefined" && typeof capabilities.video === "undefined") {
+  if (capability.useFakeMedia) {
+    if (typeof capability.audio === "undefined" && typeof capability.video === "undefined") {
       firefoxOptions.setPreference("media.navigator.streams.fake", true);
     }
   }
-  if (capabilities.headless) {
+  if (capability.headless) {
     firefoxOptions.addArguments("-headless");
   }
   // Todo : windowSize : firefoxOptions.windowSize is only working with headless mode
-  if (capabilities.windowSize) {
+  if (capability.windowSize) {
     // firefoxOptions.
   } 
-  if (capabilities.flags) {
-    for (let flag in capabilities.flags) {
-      firefoxOptions.addArguments(capabilities.flags[flag]);
+  if (capability.flags) {
+    for (let flag in capability.flags) {
+      firefoxOptions.addArguments(capability.flags[flag]);
     }
   }
   return firefoxOptions;
@@ -64,27 +65,30 @@ const getFirefoxOptions = function(capabilities) {
  */
 const getChromeOptions = function(capabilities) {
   let chromeOptions = {};
-  if (capabilities.useFakeMedia) {
-    chromeOptions['args'] = ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'];
-    if (capabilities.video && capabilities.audio) {
-      if (capabilities.video) {
-        chromeOptions['args'].push('use-file-for-fake-video-capture=' + fetchMediaPath(capabilities.video, capabilities.browserName));
+  const capability = capabilities.capability;
+  chromeOptions['args'] = [];
+  if (capability.useFakeMedia) {
+    chromeOptions['args'].push('--use-fake-device-for-media-stream');
+    chromeOptions['args'].push('--use-fake-ui-for-media-stream');
+    if (capability.video && capability.audio) {
+      if (capability.video) {
+        chromeOptions['args'].push('use-file-for-fake-video-capture=' + fetchMediaPath(capability.video, capability.browserName));
       }
-      if (capabilities.audio) {
-        chromeOptions['args'].push('use-file-for-fake-audio-capture=' + fetchMediaPath(capabilities.audio, capabilities.browserName));
+      if (capability.audio) {
+        chromeOptions['args'].push('use-file-for-fake-audio-capture=' + fetchMediaPath(capability.audio, capability.browserName));
       }
     }
   }
 
-  if (capabilities.headless) {
+  if (capability.headless) {
     chromeOptions['args'].push('--headless');
   }
-  if (capabilities.windowSize) {
+  if (capability.windowSize) {
     chromeOptions['args'].push("window-size=" + capabilities.windowSize);
   }
-  if (capabilities.flags) {
-    for(let flag in capabilities.flags) {
-      chromeOptions['args'].push(capabilities.flags[flag]);
+  if (capability.flags) {
+    for(let flag in capability.flags) {
+      chromeOptions['args'].push(capability.flags[flag]);
     }
   }
   return chromeOptions;
@@ -132,13 +136,12 @@ module.exports = {
    * @returns {Object} Browser options
    */
   getOptions: function(capabilities) {
-    const capability = capabilities.capability
     switch(capabilities.browserSpecs.browserName) {
       case 'chrome': {
-        return getChromeOptions(capability);
+        return getChromeOptions(capabilities);
       }
       case 'firefox': {
-        return getFirefoxOptions(capability);
+        return getFirefoxOptions(capabilities);
       }
       default:
         //todo
