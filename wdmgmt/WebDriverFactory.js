@@ -32,16 +32,17 @@ const getSystemPlatform = function() {
 const createWebDriver = async function(capabilities, remoteAddress) {
   //to make sure the cap doesn't has anything weird:
   const cap = {};
-  cap.browserName = capabilities.browserName;
-  cap.version = capabilities.version;
+  const browserSpecs =  capabilities.browserSpecs;
+  cap.browserName = browserSpecs.browserName;
+  cap.version = browserSpecs.version;
   cap.gateway = (capabilities.gateway && capabilities.gateway !== 'none') ? capabilities.gateway : null;
-  if (capabilities.platform.toLocaleUpperCase() === 'LOCALHOST') {
+  if (browserSpecs.platform.toLocaleUpperCase() === 'LOCALHOST') {
     let systemName = getSystemPlatform();
     cap.platformName = systemName;
     cap.platform = systemName;
   } else {
-    cap.platformName = capabilities.platformName;
-    cap.platform = capabilities.platform;
+    cap.platformName = browserSpecs.platformName;
+    cap.platform = browserSpecs.platform;
   }
 
   const options = WebDriverUtils.getOptions(capabilities);

@@ -132,12 +132,13 @@ module.exports = {
    * @returns {Object} Browser options
    */
   getOptions: function(capabilities) {
-    switch(capabilities.browserName) {
+    const capability = capabilities.capability
+    switch(capabilities.browserSpecs.browserName) {
       case 'chrome': {
-        return getChromeOptions(capabilities);
+        return getChromeOptions(capability);
       }
       case 'firefox': {
-        return getFirefoxOptions(capabilities);
+        return getFirefoxOptions(capability);
       }
       default:
         //todo
