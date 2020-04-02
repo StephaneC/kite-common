@@ -29,7 +29,7 @@ const getSystemPlatform = function() {
  * @param {String} remoteAddress The remote address
  * @return {Object} The driver
  */
-const createWebDriver = async function(capabilities, remoteAddress) {
+const createWebDriver = async function(capabilities) {
   //to make sure the cap doesn't has anything weird:
   const cap = {};
   const browserSpecs =  capabilities.browserSpecs;
@@ -51,7 +51,7 @@ const createWebDriver = async function(capabilities, remoteAddress) {
       cap['goog:chromeOptions'] =  options;
       return new Builder()
         .forBrowser('chrome')
-        .usingServer(remoteAddress)
+        .usingServer(capabilities.paas.url)
         .withCapabilities(cap)
         .build();
     }
@@ -59,7 +59,7 @@ const createWebDriver = async function(capabilities, remoteAddress) {
       cap.acceptInsecureCerts = true;
       return new Builder()
         .forBrowser('firefox')
-        .usingServer(remoteAddress)
+        .usingServer(capabilities.paas.url)
         .withCapabilities(cap)
         .setFirefoxOptions(options)
         .build();
