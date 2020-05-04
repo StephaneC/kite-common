@@ -40,7 +40,8 @@ class RTCRTPStreamStats extends RTCStatObject {
       builder["packetsSent"] = this.getStatByName(this.statObject, "packetsSent"); 
       builder["bytesSent"] = this.getStatByName(this.statObject, "bytesSent"); 
       builder["remoteId"] = this.getStatByName(this.statObject, "remoteId"); 
-      builder["framesDecoded"] = this.getStatByName(this.statObject, "framesDecoded"); 
+      builder["framesDecoded"] = this.getStatByName(this.statObject, "framesDecoded");
+      builder["qualityLimitationReason"] = this.getStatByName(this.statObject, "qualityLimitationReason"); 
     } 
     return builder;
   }
