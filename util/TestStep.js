@@ -45,6 +45,7 @@ class TestStep {
         KiteBaseTest.report.status = Status.BROKEN;
       }
       this.report.setStatus(KiteBaseTest.report.status);
+      this.report.setDetail({message:error.message});
     } finally {
       await this.finish();
       await KiteBaseTest.report.addStepReport(this.report.getJsonBuilder()); 
