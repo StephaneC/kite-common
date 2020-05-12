@@ -2,7 +2,7 @@
  * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
 */
 
-const {RTCCodecStats, RTCMediaStreamStats, RTCRTPStreamStats,
+const {RTCCodecStats, RTCMediaStreamTracksStats, RTCMediaStreamStats, RTCRTPStreamStats,
       RTCPeerConnectionStats, RTCTransportStats, RTCIceCandidatePairStats,
       RTCIceCandidateStats} = require('../RTCstats');
 
@@ -68,7 +68,7 @@ function buildSingleStatObject(statArray, selectedStats) {
               statObject = new RTCCodecStats(statArray[i]);
               break;
             case "track": 
-              statObject = new RTCCodecStats(statArray[i]);
+              statObject = new RTCMediaStreamTracksStats(statArray[i]);
               break;
             case "stream": 
               statObject = new RTCMediaStreamStats(statArray[i]);

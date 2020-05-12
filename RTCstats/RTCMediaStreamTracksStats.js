@@ -22,6 +22,8 @@ class RTCMediaStreamTracksStats extends RTCStatObject {
     this.framesCorrupted = this.getStatByName(statObject, "framesCorrupted");
     this.audioLevel = this.getStatByName(statObject, "audioLevel");
     this.timestamp = this.getStatByName(statObject, "timestamp");
+    this.jitterBufferDelay = this.getStatByName(statObject, "jitterBufferDelay");
+    this.jitterBufferEmittedCount = this.getStatByName(statObject, "jitterBufferEmittedCount");
   }
 
   getJsonBuilder() {
@@ -40,6 +42,8 @@ class RTCMediaStreamTracksStats extends RTCStatObject {
     builder["framesCorrupted"] = this.framesCorrupted;
     builder["audioLevel"] = this.audioLevel;
     builder["timestamp"] = this.timestamp;
+    builder["jitterBufferDelay"] = this.jitterBufferDelay;
+    builder["jitterBufferEmittedCount"] = this.jitterBufferEmittedCount;
     return builder;
   }
 }
