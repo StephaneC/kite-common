@@ -2,9 +2,9 @@
  * Copyright (C) CoSMo Software Consulting Pte. Ltd. - All Rights Reserved
 */
 
-const {RTCCodecStats, RTCMediaStreamTracksStats, RTCMediaStreamStats, RTCRTPStreamStats,
-      RTCPeerConnectionStats, RTCTransportStats, RTCIceCandidatePairStats,
-      RTCIceCandidateStats} = require('../RTCstats');
+const { RTCCodecStats, RTCMediaStreamTracksStats, RTCMediaStreamStats, RTCRTPStreamStats,
+  RTCPeerConnectionStats, RTCTransportStats, RTCIceCandidatePairStats,
+  RTCIceCandidateStats } = require('../RTCstats');
 
 const candidatePairStats = ["bytesSent", "bytesReceived", "currentRoundTripTime", "totalRoundTripTime", "timestamp"];
 const inboundStats = ["bytesReceived", "packetsReceived", "packetsLost", "jitter", "timestamp"];
@@ -21,11 +21,11 @@ function buildClientStatObject(clientStats, selectedStats) {
   try {
     let clientStatArray = clientStats['stats'];
     let jsonClientStatArray = [];
-    for(let i = 0; i < clientStatArray.length; i++) {
+    for (let i = 0; i < clientStatArray.length; i++) {
       let jsonStatObjectBuilder = buildSingleStatObject(clientStatArray[i], selectedStats);
       jsonClientStatArray.push(jsonStatObjectBuilder);
     }
-    if(typeof selectedStats === "undefined") {
+    if (typeof selectedStats === "undefined") {
       // add SDP offer stuff
       let sdpBuilder = {};
       let tmpsdpOffer = clientStats["offer"];
@@ -40,12 +40,12 @@ function buildClientStatObject(clientStats, selectedStats) {
       sdpBuilder["answer"] = sdpAnswer;
       builder["sdp"] = sdpBuilder;
     }
-    builder['statsArray'] = jsonClientStatArray; 
+    builder['statsArray'] = jsonClientStatArray;
     return builder;
   } catch (e) {
     console.log(e);
     return {};
-  }  
+  }
 }
 
 /**
@@ -58,37 +58,40 @@ function buildSingleStatObject(statArray, selectedStats) {
   let stat = {};
   let selectedStatsString = JSON.stringify(selectedStats);
   if (statArray != undefined) {
-    for(var i = 0; i < statArray.length; i++) {
+    for (var i = 0; i < statArray.length; i++) {
       if (typeof statArray[i] !== "undefined") {
         var type = statArray[i].type;
-        if(selectedStatsString == "null" || selectedStatsString.length == 0 || selectedStatsString.indexOf(type) != -1) {
+        if (selectedStatsString == "null" || selectedStatsString.length == 0 || selectedStatsString.indexOf(type) != -1) {
           var statObject = null;
-          switch(type) {
-            case "codec": 
+          switch (type) {
+            case "codec":
               statObject = new RTCCodecStats(statArray[i]);
               break;
-            case "track": 
+            case "track":
               statObject = new RTCMediaStreamTracksStats(statArray[i]);
               break;
-            case "stream": 
+            case "media-source":
+              statObject = new RTCMediaStreamTracksStats(statArray[i]);
+              break;
+            case "stream":
               statObject = new RTCMediaStreamStats(statArray[i]);
               break;
-            case "inbound-rtp": 
+            case "inbound-rtp":
               statObject = new RTCRTPStreamStats(statArray[i], true);
               break;
-            case "remote-inbound-rtp": 
+            case "remote-inbound-rtp":
               statObject = new RTCRTPStreamStats(statArray[i], true);
               break;
-            case "outbound-rtp": 
+            case "outbound-rtp":
               statObject = new RTCRTPStreamStats(statArray[i], false);
               break;
-            case "peer-connection": 
+            case "peer-connection":
               statObject = new RTCPeerConnectionStats(statArray[i]);
               break;
-            case "transport": 
+            case "transport":
               statObject = new RTCTransportStats(statArray[i]);
               break;
-            case "candidate-pair": 
+            case "candidate-pair":
               statObject = new RTCIceCandidatePairStats(statArray[i]);
               break;
             case "remote-candidate":
@@ -100,21 +103,21 @@ function buildSingleStatObject(statArray, selectedStats) {
             default:
               break;
           }
-          if(statObject != null) {
-            if(typeof stat[type] === "undefined") {
+          if (statObject != null) {
+            if (typeof stat[type] === "undefined") {
               stat[type] = [];
             }
             stat[type].push(statObject);
           }
         }
       }
-    } 
+    }
   }
-  if(typeof stat !== "undefined") {
-    for(let i = 0; i < Object.keys(stat).length; i++) {
+  if (typeof stat !== "undefined") {
+    for (let i = 0; i < Object.keys(stat).length; i++) {
       let idx = Object.keys(stat)[i];
       let tmp = {};
-      for(let j = 0; j < stat[idx].length; j++) {
+      for (let j = 0; j < stat[idx].length; j++) {
         let jdx = stat[idx][j];
         tmp[jdx.id] = jdx.getJsonBuilder();
       }
@@ -130,16 +133,16 @@ function buildSingleStatObject(statArray, selectedStats) {
  */
 function getSuccessfulCandidate(jsonObject) {
   let candObj = jsonObject['candidate-pair'];
-  if(typeof candObj !== "undefined") {
-    for(let i = 0; i < Object.keys(candObj).length; i++) {
+  if (typeof candObj !== "undefined") {
+    for (let i = 0; i < Object.keys(candObj).length; i++) {
       let idx = Object.keys(candObj)[i];
-      if("succeeded" === candObj[idx].state) {
+      if ("succeeded" === candObj[idx].state) {
         return candObj[idx];
       }
     }
-    for(let i = 0; i < Object.keys(candObj).length; i++) {
+    for (let i = 0; i < Object.keys(candObj).length; i++) {
       let idx = Object.keys(candObj)[i];
-      if("in-progress" === candObj[idx].state && !("NA" === candObj[idx].currentRoundTripTime)) {
+      if ("in-progress" === candObj[idx].state && !("NA" === candObj[idx].currentRoundTripTime)) {
         return candObj[idx];
       }
     }
@@ -155,10 +158,10 @@ function getSuccessfulCandidate(jsonObject) {
  */
 function getRTCStats(jsonObject, stats, mediaType) {
   let obj = jsonObject[stats];
-  if(typeof obj !== "undefined") {
-    for(let i = 0; i < Object.keys(obj).length; i++) {
+  if (typeof obj !== "undefined") {
+    for (let i = 0; i < Object.keys(obj).length; i++) {
       let idx = Object.keys(obj)[i];
-      if(mediaType === obj[idx]['mediaType']) {
+      if (mediaType === obj[idx]['mediaType']) {
         return obj[idx];
       }
     }
@@ -173,12 +176,12 @@ function getRTCStats(jsonObject, stats, mediaType) {
  */
 function extractStats(senderStats, receiverStats) {
   let builder = {};
-  if(typeof senderStats !== "undefined") {
+  if (typeof senderStats !== "undefined") {
     builder['localPC'] = extractJson(senderStats, "out");
   }
-  if(typeof receiverStats !== "undefined") {
+  if (typeof receiverStats !== "undefined") {
     let i = 0;
-    for(let j = 0; j < receiverStats.length; j++){
+    for (let j = 0; j < receiverStats.length; j++) {
       builder["remotePC[" + i++ + "]"] = extractJson(receiverStats[j], "in", j);
     }
   }
@@ -195,17 +198,17 @@ function extractJson(jsonObj, direction) {
   let builder = {};
   let jsonArray = jsonObj['statsArray'];
   let noStats = 0;
-  if(typeof jsonObj !== "undefined") {
-    if(typeof jsonArray !== "undefined") {
+  if (typeof jsonObj !== "undefined") {
+    if (typeof jsonArray !== "undefined") {
       noStats = jsonArray.length;
     }
-    for(let i = 0; i < noStats; i++) {
+    for (let i = 0; i < noStats; i++) {
       builder['candidate-pair_' + i] = getStatsJsonBuilder(jsonArray[i], candidatePairStats, "candidate-pair", "");
-      if("both" === direction.toLowerCase() || "in" === direction.toLowerCase()) {
+      if ("both" === direction.toLowerCase() || "in" === direction.toLowerCase()) {
         builder['inbound-audio_' + i] = getStatsJsonBuilder(jsonArray[i], inboundStats, "inbound-rtp", "audio");
         builder['inbound-video_' + i] = getStatsJsonBuilder(jsonArray[i], inboundStats, "inbound-rtp", "video");
       }
-      if("both" === direction.toLowerCase() || "out" === direction.toLowerCase()) {
+      if ("both" === direction.toLowerCase() || "out" === direction.toLowerCase()) {
         builder['outbound-audio_' + i] = getStatsJsonBuilder(jsonArray[i], outboundStats, "outbound-rtp", "audio");
         builder['outbound-video_' + i] = getStatsJsonBuilder(jsonArray[i], outboundStats, "outbound-rtp", "video");
       }
@@ -220,15 +223,15 @@ function extractJson(jsonObj, direction) {
   csvBuilder['totalBytesSent (Bytes)'] = totalBytes(builder, noStats, "Sent");
   csvBuilder['avgSentBitrate (bps)'] = computeBitrate(builder, noStats, "Sent", "candidate-pair");
   csvBuilder['avgReceivedBitrate (bps)'] = computeBitrate(builder, noStats, "Received", "candidate-pair");
-  if("both" === direction || "in" === direction) {  
+  if ("both" === direction || "in" === direction) {
     csvBuilder['inboundAudioBitrate (bps)'] = computeBitrate(builder, noStats, "in", "audio");
     csvBuilder['inboundVideoBitrate (bps)'] = computeBitrate(builder, noStats, "in", "video");
   }
-  if("both" === direction || "out" === direction) {
+  if ("both" === direction || "out" === direction) {
     csvBuilder['outboundAudioBitrate (bps)'] = computeBitrate(builder, noStats, "out", "audio");
     csvBuilder['outboundVideoBitrate (bps)'] = computeBitrate(builder, noStats, "out", "video");
   }
-  if("both" === direction || "in" === direction) {
+  if ("both" === direction || "in" === direction) {
     csvBuilder['audioJitter (ms)'] = computeAudioJitter(builder, noStats);
     csvBuilder['audioPacketsLoss (%)'] = computePacketsLoss(builder, noStats, "audio");
     csvBuilder['videoPacketsLoss (%)'] = computePacketsLoss(builder, noStats, "video");
@@ -243,7 +246,7 @@ function extractJson(jsonObj, direction) {
  * @returns {String} 
  */
 function getJsonObjectName(direction, mediaType) {
-  if("candidate-pair" === mediaType) {
+  if ("candidate-pair" === mediaType) {
     return "candidate-pair_";
   }
   return direction + "bound-" + mediaType + "_";
@@ -254,10 +257,10 @@ function getJsonObjectName(direction, mediaType) {
  * @param {String} direction 
  */
 function getJsonKey(direction) {
-  if("Sent" === direction || "out" === direction) {
+  if ("Sent" === direction || "out" === direction) {
     return "bytesSent";
   }
-  if("Received" === direction || "in" === direction) {
+  if ("Received" === direction || "in" === direction) {
     return "bytesReceived";
   }
   return null;
@@ -273,9 +276,9 @@ function computeRoundTripTime(jsonObject, noStats, prefix) {
   let rtt = 0;
   let ct = 0;
   try {
-    for(let i = 0; i < noStats; i++) {
+    for (let i = 0; i < noStats; i++) {
       let s = jsonObject["candidate-pair_" + i][prefix + "RoundTripTime"];
-      if(typeof s !== "undefined" && s !== "NA" && s !== "0") {
+      if (typeof s !== "undefined" && s !== "NA" && s !== "0") {
         rtt += 1000 * parseFloat(s);
         ct++;
       }
@@ -284,7 +287,7 @@ function computeRoundTripTime(jsonObject, noStats, prefix) {
     console.log(e);
   }
   if (ct > 0) {
-    return "" + Math.round(rtt/ct);
+    return "" + Math.round(rtt / ct);
   }
   return "";
 }
@@ -299,12 +302,12 @@ function computeRoundTripTime(jsonObject, noStats, prefix) {
 function totalBytes(jsonObject, noStats, direction) {
   let bytes = 0;
   try {
-    for(let i = 0; i < noStats; i++) {
+    for (let i = 0; i < noStats; i++) {
       let s = jsonObject['candidate-pair_' + i]['bytes' + direction];
       if (typeof s !== "undefined" && s !== "NA") {
         let b = parseFloat(s);
         bytes = Math.max(b, bytes);
-      } 
+      }
     }
   } catch (e) {
     console.log(e);
@@ -331,30 +334,30 @@ function computeBitrate(jsonObject, noStats, direction, mediaType) {
     try {
       let jsonObjName = getJsonObjectName(direction, mediaType);
       let jsonKey = getJsonKey(direction);
-      for(let i = 0; i < noStats; i++) {
+      for (let i = 0; i < noStats; i++) {
         let s;
-        if(typeof jsonObject[jsonObjName + i] !== "undefined") {
+        if (typeof jsonObject[jsonObjName + i] !== "undefined") {
           s = jsonObject[jsonObjName + i][jsonKey];
         }
-        if(typeof s !== "undefined" && s !== "NA") {
+        if (typeof s !== "undefined" && s !== "NA") {
           b = parseFloat(s);
           bytesStart = (bytesStart == 0 || b < bytesStart) ? b : bytesStart;
           bytesEnd = (bytesEnd == 0 || b > bytesEnd) ? b : bytesEnd;
         }
         let ts;
-        if(typeof jsonObject[jsonObjName + i] !== "undefined") {
+        if (typeof jsonObject[jsonObjName + i] !== "undefined") {
           ts = jsonObject[jsonObjName + i]["timestamp"];
-        } 
+        }
         if (typeof ts !== "undefined" && s !== "NA") {
           b = parseFloat(ts);
           if (i === 0) {
             tsStart = b;
-            if(direction === "in") {
+            if (direction === "in") {
             }
           }
-          if (i === (noStats-1)) {
+          if (i === (noStats - 1)) {
             tsEnd = b;
-            if(direction === "in") {
+            if (direction === "in") {
             }
           }
         }
@@ -383,19 +386,19 @@ function computeAudioJitter(jsonObject, noStats) {
   let ct = 0;
   if (noStats > 1) {
     try {
-      for(let i = 0; i < noStats; i++) {
+      for (let i = 0; i < noStats; i++) {
         let obj = jsonObject["inbound-audio_" + i];
         if (typeof obj !== "undefined") {
           let s = obj["jitter"];
-          if(typeof s !== "undefined" && s !== "NA") {
+          if (typeof s !== "undefined" && s !== "NA") {
             jitter += (1000 * parseFloat(s));
             ct++;
           }
         }
       }
-      if (ct > 0) { 
-        return "" + (jitter/ct).toFixed(3);
-  
+      if (ct > 0) {
+        return "" + (jitter / ct).toFixed(3);
+
       }
     } catch (e) {
       console.log(e);
@@ -415,20 +418,20 @@ function computePacketsLoss(jsonObject, noStats, mediaType) {
   if (noStats >= 1) {
     try {
       obj = jsonObject["inbound-" + mediaType + "_" + (noStats - 1)];
-      if(typeof obj !== "undefined") {
+      if (typeof obj !== "undefined") {
         let s = obj["packetsReceived"];
         let l = obj["packetsLost"];
-        if(typeof s !== "undefined" && s !== "NA" && typeof l !== "undefined" && l !== "NA") {
+        if (typeof s !== "undefined" && s !== "NA" && typeof l !== "undefined" && l !== "NA") {
           let packetsLost = parseFloat(l);
           let totalPackets = parseFloat(s) + packetsLost;
-          if(totalPackets > 0) {
+          if (totalPackets > 0) {
             let packetLoss = packetsLost / totalPackets * 100;
             return packetLoss.toFixed(2);
           }
         } else {
           console.log('computePacketsLoss');
           console.log(obj);
-        }  
+        }
       } else {
         console.log("computePacketLoss obj is null" + (" inbound-" + mediaType + "_" + (noStats - 1)));
       }
@@ -450,20 +453,20 @@ function computePacketsLoss(jsonObject, noStats, mediaType) {
  */
 function getStatsJsonBuilder(jsonObject, stringArray, stats, mediaType) {
   let subBuilder = {};
-  if("candidate-pair" === stats) {
+  if ("candidate-pair" === stats) {
     let successfulCandidate = getSuccessfulCandidate(jsonObject);
-    if(typeof successfulCandidate !== "undefined") {
-      for(let i = 0; i < stringArray.length; i++) {
-        if(successfulCandidate.hasOwnProperty(stringArray[i])) {
+    if (typeof successfulCandidate !== "undefined") {
+      for (let i = 0; i < stringArray.length; i++) {
+        if (successfulCandidate.hasOwnProperty(stringArray[i])) {
           subBuilder[stringArray[i]] = successfulCandidate[stringArray[i]];
         }
       }
     }
   } else {
     let obj = getRTCStats(jsonObject, stats, mediaType);
-    if(typeof obj !== "undefined") {
-      for(let i = 0; i < stringArray.length; i++) {
-        if(obj.hasOwnProperty(stringArray[i])) {
+    if (typeof obj !== "undefined") {
+      for (let i = 0; i < stringArray.length; i++) {
+        if (obj.hasOwnProperty(stringArray[i])) {
           subBuilder[stringArray[i]] = obj[stringArray[i]];
         }
       }
