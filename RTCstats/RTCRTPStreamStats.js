@@ -28,6 +28,7 @@ class RTCRTPStreamStats extends RTCStatObject {
     builder["nackCount"] = this.nackCount;
     builder["codecId"] = this.codecId;
     builder["timestamp"] = this.timestamp;
+    builder["roundTripTime"] = this.roundTripTime;
     if(this.inbound) {
       builder["packetsReceived"] = this.getStatByName(this.statObject, "packetsReceived");
       builder["bytesReceived"] = this.getStatByName(this.statObject, "bytesReceived");
